@@ -15,12 +15,12 @@ Android 最低 API 24、iOS 15；HAR 使用 HarmonyOS API 22 构建，ScanKit �
 
 ## Android / KMP
 
-仓库添加 `maven("https://jitpack.io")`。版本 `0.1.0`：
+仓库添加 `maven("https://jitpack.io")`。版本 `0.1.1`：
 
 ```kotlin
-implementation("com.github.gycrosskit.scanner:scanner-core:0.1.0")
+implementation("com.github.gycrosskit.scanner:scanner-core:0.1.1")
 // 鸿蒙 Kuikly 项目另外添加：
-implementation("com.github.gycrosskit.scanner:scanner-kuikly:0.1.0")
+implementation("com.github.gycrosskit.scanner:scanner-kuikly:0.1.1")
 ```
 
 Kuikly OHOS 需要 Kotlin `2.2.21-1.0.0`、Kuikly `2.28.0-2.0.21-ohos`，并配置腾讯 Maven 仓库以解析 OHOS 版 Kotlin/coroutines。
@@ -40,7 +40,7 @@ preview.release()
 
 ## iOS
 
-Swift Package URL：`https://github.com/gycrosskit/scanner`，版本 `0.1.0`，产品 `GycScannerNative`。Info.plist 配置 `NSCameraUsageDescription`，宿主先申请相机权限。
+Swift Package URL：`https://github.com/gycrosskit/scanner`，版本 `0.1.1`，产品 `GycScannerNative`。Info.plist 配置 `NSCameraUsageDescription`，宿主先申请相机权限。
 
 ```swift
 import GycScannerNative
@@ -75,6 +75,17 @@ scanner.dispose();
 `status` 为 `decoded / not_found / cancelled / permission_denied / busy / invalid_content / failed`。同实例只允许一个系统扫码请求，图片解码会在 finally 删除临时文件。dispose 后返回 cancelled；ScanKit 不提供主动关闭系统扫码页的接口。
 
 Kuikly Kotlin Pager 注册 `ScannerModule.NAME to ScannerModule()`；ArkTS render 注册 `GycScannerModule.MODULE_NAME` 对应 `GycScannerModule`。Kotlin `scanCode()` 取消返回 null，SDK 错误抛异常，`decode(bytes)` 未识别返回 null。页面销毁时必须显式调用 Kotlin ScannerModule.dispose()，取消挂起请求并移除回调。仅允许 32 MiB 内的图片，Base64 桥会额外占用内存。
+
+## Maven 发布
+
+在 macOS 构建 Android/iOS/OHOS 完整 Maven 目录，打包为对应不可变标签的 `scanner-maven.tar.gz` Release 附件。JitPack 只下载并校验固定 SHA-256 后安装，避免构建宿主差异导致 iOS/OHOS 产物遗漏。`jitpack-install.sh` 中的 SHA 必须与标签附件一致；禁止覆盖已发布标签或归档。
+
+```sh
+bash gradlew publishToMavenLocal -Dmaven.repo.local=/tmp/scanner-release-maven
+# 从已发布 Maven 目录验证独立消费者：
+bash gradlew -p verification -PscannerMavenRepo=/tmp/scanner-release-maven compileDebugKotlinAndroid compileKotlinIosSimulatorArm64 compileKotlinOhosArm64
+# 远程验证时去掉 scannerMavenRepo 参数。
+```
 
 ## 验证与边界
 
