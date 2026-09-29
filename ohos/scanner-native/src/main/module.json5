@@ -1,0 +1,7 @@
+{
+  "module": {
+    "name": "ScannerNative",
+    "type": "har",
+    "deviceTypes": ["default", "tablet"]
+  }
+}
