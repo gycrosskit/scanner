@@ -1,14 +1,21 @@
 pluginManagement {
     repositories {
         maven("https://maven.eazytec-cloud.com/nexus/repository/maven-public/")
+        maven("https://maven.aliyun.com/repository/google")
+        maven("https://maven.aliyun.com/repository/public")
         google(); mavenCentral(); gradlePluginPortal()
         maven("https://mirrors.tencent.com/nexus/repository/maven-public/")
     }
 }
 dependencyResolutionManagement {
     repositories {
-        maven("https://jitpack.io")
+        maven {
+            url = uri(providers.gradleProperty("scannerMavenRepo").orElse("https://jitpack.io").get())
+            content { includeGroup("com.github.gycrosskit.scanner") }
+        }
         maven("https://maven.eazytec-cloud.com/nexus/repository/maven-public/")
+        maven("https://maven.aliyun.com/repository/google")
+        maven("https://maven.aliyun.com/repository/public")
         google(); mavenCentral()
         maven("https://mirrors.tencent.com/nexus/repository/maven-public/")
         maven("https://mirrors.tencent.com/nexus/repository/maven-tencent/")
