@@ -57,7 +57,7 @@ preview.releaseCamera()
 
 ## HarmonyOS / Kuikly
 
-原生项目安装 `@gycrosskit/scanner-native`（ohpm 上架状态见 Release；审核未通过前使用 Release HAR 文件）。直接使用：
+原生项目安装 `@gycrosskit/scanner-native@0.1.1`（ohpm 上架状态见 Release；审核未通过前使用 Release HAR 文件）。直接使用：
 
 ```typescript
 const scanner = new GycScanner(context);
