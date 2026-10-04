@@ -2,9 +2,11 @@ plugins {
     kotlin("multiplatform") version "2.2.21-1.0.0"
     id("com.android.library") version "8.10.1"
 }
-val scannerVersion = providers.gradleProperty("scannerVersion").orElse("0.1.3").get()
+val scannerVersion = providers.gradleProperty("scannerVersion").orElse("0.1.4").get()
 kotlin {
     androidTarget()
+    iosArm64()
+    iosX64()
     iosSimulatorArm64 { binaries.framework { baseName = "ScannerConsumer" } }
     ohosArm64()
     sourceSets {
