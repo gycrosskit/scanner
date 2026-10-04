@@ -1,5 +1,9 @@
 # 更新记录
 
+## 0.1.3
+
+- 修复 JitPack 安装入口对旧 Python 运行器的依赖；Maven metadata 仍在归档前校验，消费端校验固定标签 SHA 并安装原字节。
+
 ## 0.1.2
 
 - 新增 Kuikly 嵌入式 ScanKit 预览 View；复用进程唯一相机会话、串行释放和迟帧隔离。
