@@ -2,13 +2,13 @@
 
 二维码图片解码、Android/iOS 原生相机预览和 HarmonyOS ScanKit 系统扫码。返回原始文本；业务格式校验、扫码框、提示、导航和图片选择由宿主负责。
 
-## 0.1.4 发布候选
+## 0.1.4 prerelease
 
 修复 Kuikly scan/decode 回调已完成但协程尚未消费时页面销毁的迟交付，保留请求归属和 native cancel。新 POM 补齐 Apache-2.0 元数据。
 
 | 渠道 | 本轮版本 | 状态 |
 | --- | --- | --- |
-| Maven core/Kuikly | 0.1.4 | 待完整归档和真实远程消费 |
+| Maven core/Kuikly | 0.1.4 | JitPack 全文件/hash 与 Android/OHOS/三 iOS 编译、Simulator 链接通过 |
 | HarmonyOS HAR | 0.1.3 | 原生源码未变，沿用旧 Release 已验产物 |
 | Swift Package GycScannerNative | 0.1.1 | 原生源码未变，保持既有精确消费版本 |
 

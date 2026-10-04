@@ -6,9 +6,9 @@
 
 | 渠道 | 本轮版本 | 状态 |
 | --- | --- | --- |
-| Maven core/Kuikly | 0.1.4 | 待完整归档和真实远程消费 |
+| Maven core/Kuikly | 0.1.4 | JitPack 全文件/hash 与 Android/OHOS/三 iOS 编译、Simulator 链接通过 |
 | HarmonyOS HAR | 0.1.3 | 原生源码未变，沿用旧 Release 已验产物 |
 | Swift Package GycScannerNative | 0.1.1 | 原生源码未变，保持既有精确消费版本 |
 
 
-历史版本与验证范围见 [Releases](https://github.com/gycrosskit/scanner/releases)；候选状态在完成本轮验证后更新。
+历史版本与验证范围见 [Releases](https://github.com/gycrosskit/scanner/releases)；真实消费与 Registry 状态见本轮发布验收。
