@@ -33,6 +33,70 @@ Android/iOS 提供嵌入式预览；HarmonyOS 稳定版提供系统扫码页，0
 
 0.1.2 JitPack 因旧 Python 运行器解析失败；其标签和资产保留，使用修正安装入口的 0.1.3。真实声音/振动、Surface/ScanKit 与前后台仍需设备验收。完整接线见[接入指南](docs/接入指南.md#嵌入式预览与反馈)。
 
+## 架构与调用流程
+
+图片解码与相机预览是两个入口。`scanner-core` 提供 KMP 解码契约；iOS 由宿主接线 Swift bridge，HarmonyOS Kuikly 通过 HAR 调用 ScanKit。嵌入式预览按上方版本边界接入。
+
+```mermaid
+flowchart TB
+    Host[宿主] --> Core[scanner-core<br/>QrCodeDecoder]
+    Core --> Android[AndroidQrCodeDecoder<br/>ZXing]
+    Core --> IOS[IosQrCodeDecoder<br/>IosQrCodeBridge]
+    IOS --> Swift[GycScannerNative<br/>CoreImage]
+    Core --> Module[scanner-kuikly<br/>ScannerModule]
+    Module --> Native[HAR<br/>GycScannerModule]
+    Native --> Scan[GycScanner<br/>ScanKit]
+    Host --> Preview[原生 / Kuikly<br/>ScannerPreviewView]
+    Preview --> Camera[Android: ZXing<br/>iOS: AVFoundation<br/>HarmonyOS: ScanKit]
+```
+
+以下是 HarmonyOS 系统扫码页的调用，不是嵌入式预览。用户取消返回 `null`，设备或 SDK 失败进入错误出口；系统扫码页不能被组件强制关闭。
+
+```mermaid
+sequenceDiagram
+    participant Host as Kuikly 页面
+    participant Module as ScannerModule
+    participant Native as GycScannerModule
+    participant Scanner as GycScanner
+    participant System as ScanKit
+    Host->>Module: scanCode()
+    Module->>Native: scan（异步 JSON 回调）
+    Native->>Scanner: scan()
+    Scanner->>System: startScanForResult
+    System-->>Scanner: 结果或错误
+    Scanner-->>Native: ScanResult
+    Native-->>Module: 页面仍有效时回调
+    Module-->>Host: 原始文本 / null / 异常
+    Note over Host,Module: dispose 取消 Kotlin 等待，销毁后不交付旧结果
+    Note over Native,System: 原生 onDestroy 标记 scanner 已销毁，无法主动关闭系统扫码页
+```
+
+类图聚焦图片解码；`ScannerModule` 另外提供系统扫码入口，预览 View 独立维护相机生命周期。
+
+```mermaid
+classDiagram
+    class QrCodeDecoder {
+        <<interface>>
+        +decode(bytes) String?
+    }
+    class AndroidQrCodeDecoder
+    class IosQrCodeDecoder
+    class IosQrCodeBridge {
+        <<interface>>
+        +decode(data) String?
+    }
+    class ScannerModule {
+        +scanCode() String?
+        +dispose()
+    }
+    QrCodeDecoder <|.. AndroidQrCodeDecoder
+    QrCodeDecoder <|.. IosQrCodeDecoder
+    QrCodeDecoder <|.. ScannerModule
+    IosQrCodeDecoder --> IosQrCodeBridge : 持有
+```
+
+源码：[QrCodeDecoder](scanner-core/src/commonMain/kotlin/io/github/gycrosskit/scanner/QrCodeDecoder.kt)、[Android 解码](scanner-core/src/androidMain/kotlin/io/github/gycrosskit/scanner/AndroidQrCodeDecoder.kt)、[iOS 解码与 bridge](scanner-core/src/iosMain/kotlin/io/github/gycrosskit/scanner/IosQrCodeDecoder.kt)、[Swift 解码](iosApp/Sources/GycScannerNative/QrCodeDecoder.swift)、[ScannerModule](scanner-kuikly/src/commonMain/kotlin/io/github/gycrosskit/scanner/kuikly/ScannerModule.kt)、[HAR Module](ohos/scanner-native/src/main/ets/GycScannerModule.ets)、[GycScanner](ohos/scanner-native/src/main/ets/GycScanner.ets)。预览：[Android](scanner-core/src/androidMain/kotlin/io/github/gycrosskit/scanner/ScannerPreviewView.kt)、[iOS](iosApp/Sources/GycScannerNative/ScannerPreviewView.swift)、[Kuikly](scanner-kuikly/src/commonMain/kotlin/io/github/gycrosskit/scanner/kuikly/ScannerPreviewView.kt)、[HAR](ohos/scanner-native/src/main/ets/GycScannerPreviewView.ets)。
+
 ## 安装
 
 ```kotlin
