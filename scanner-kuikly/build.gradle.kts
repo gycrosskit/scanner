@@ -13,3 +13,7 @@ kotlin {
         }
     }
 }
+
+publishing {
+    repositories { maven { name = "staging"; url = uri(rootProject.layout.buildDirectory.dir("maven")) } }
+}
