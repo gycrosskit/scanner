@@ -5,6 +5,7 @@ import com.tencent.kuikly.core.module.CallbackRef
 import com.tencent.kuikly.core.module.Module
 import com.tencent.kuikly.core.nvi.serialization.json.JSONObject
 import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.io.encoding.Base64
@@ -34,7 +35,7 @@ class ScannerModule : Module(), QrCodeDecoder {
 
     private suspend fun await(method: String, args: JSONObject): JSONObject? {
         if (disposed) return null
-        return suspendCancellableCoroutine { continuation ->
+        val response = suspendCancellableCoroutine<JSONObject?> { continuation ->
             pending.add(continuation)
             var callbackRef: CallbackRef? = null
             continuation.invokeOnCancellation {
@@ -47,6 +48,9 @@ class ScannerModule : Module(), QrCodeDecoder {
             }, false).callbackRef
             if (!continuation.isActive) callbackRef?.let(::removeCallback)
         }
+        // 原生回调已完成也可能尚未调度消费；页面销毁后不能再投递二维码。
+        if (disposed) throw CancellationException("ScannerModule is disposed")
+        return response
     }
 
     fun dispose() {
