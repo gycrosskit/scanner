@@ -12,6 +12,15 @@
 
 Android/iOS 提供嵌入式预览，HarmonyOS 打开系统扫码页。纯 OpenHarmony 设备不保证有 ScanKit，失败返回 `failed`。KMP 使用 Kotlin `2.2.21-1.0.0`，Kuikly 使用 `2.28.0-2.0.21-ohos`；OHOS 工具链配置见接入指南。
 
+## 0.1.2 候选能力（待发布）
+
+- Android 既有 `ScannerPreviewView` 新增 `setFeedbackEnabled(enabled, vibrateEnabled = false)`；默认行为不变，宿主显式开启后由组件在一次有效结果上播放 ZXing 声音/可选振动。权限、状态栏样式和业务结果仍归宿主。
+- HarmonyOS HAR 新增可直接注册的 `GycScannerPreviewView`，嵌入式 ScanKit Surface、进程唯一相机 owner、串行 init/start/stop/release 与帧代次由组件负责。旧 owner 成功 release 后新 View 才能 init；释放失败保留 owner 以便重试。
+- `scanner-kuikly` 新增 `ScannerPreviewView` / `ScannerPreviewAttr` / `ScannerPreviewEvent` 和 DSL `ScannerPreview`，宿主 Compose 只装配布局和业务 callback。
+
+这些新增 API 尚未发布，不由下方历史 `0.1.1` 坐标提供。设备必须提供 ScanKit，取景框、相册选择和权限 UI 仍由宿主绘制。
+完整接线见[接入指南](docs/接入指南.md#嵌入式预览与反馈待发布)。
+
 ## 安装
 
 ```kotlin
@@ -71,12 +80,13 @@ iOS 使用 `QrCodeDecoder.decode(data:)` 和 `ScannerPreviewView`；HarmonyOS �
 
 HarmonyOS 同实例只允许一个系统扫码请求；销毁时 `dispose()` 取消挂起回调。ScanKit 无主动关闭系统扫码页的接口；图片解码临时文件在 finally 清理，桥接图片上限 32 MiB，Base64 会额外占用内存。
 
-不提供一维条码、多码选择、连续扫描、独立图片选择器、状态栏修改或提示音。编译与契约检查不代替真实设备相机、权限拒绝、前后台切换和二维码识别验收。
+不提供一维条码、多码选择、连续扫描、独立图片选择器或状态栏修改。编译与契约检查不代替真实设备相机、权限拒绝、前后台切换和二维码识别验收。
 
 ## 文档与帮助
 
 - [接入指南](docs/接入指南.md)：平台初始化、权限声明和生命周期。
 - [开发与验证](docs/开发与验证.md)：源码构建、检查命令与验收范围。
+- [M13 候选验收](verification/嵌入式扫码候选验收.md)：本地测试、完整归档与未验收边界。
 - [版本与发行说明](https://github.com/gycrosskit/scanner/releases)、[问题反馈](https://github.com/gycrosskit/scanner/issues)。
 
 Apache-2.0，见 [LICENSE](LICENSE)。

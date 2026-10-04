@@ -19,3 +19,8 @@ context 为 UIAbilityContext，图片解码使用 decode(ArrayBuffer)。需要�
 [完整接入指南](https://github.com/gycrosskit/scanner/blob/main/docs/接入指南.md) · [开发与验证](https://github.com/gycrosskit/scanner/blob/main/docs/开发与验证.md) · [版本](https://github.com/gycrosskit/scanner/releases) · [问题反馈](https://github.com/gycrosskit/scanner/issues)。
 
 Apache-2.0，见 [LICENSE](LICENSE)。
+
+
+当前源码待发布新增 `GycScannerPreviewView`（Kuikly Renderer 注册名相同），提供 Surface 预览、running、
+scanFrameSize(vp)、onResult/onFailure；取景框和权限 UI 留宿主。旧相机成功释放后才转移唯一 owner。
+Kotlin View 和生命周期示例见仓库 docs/接入指南.md，历史 0.1.1 发布物不包含新 API。

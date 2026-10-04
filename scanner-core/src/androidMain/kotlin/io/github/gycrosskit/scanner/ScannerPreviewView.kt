@@ -1,8 +1,11 @@
 package io.github.gycrosskit.scanner
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.widget.FrameLayout
 import com.google.zxing.BarcodeFormat
+import com.google.zxing.client.android.BeepManager
 import com.journeyapps.barcodescanner.BarcodeView
 import com.journeyapps.barcodescanner.CameraPreview
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
@@ -20,6 +23,7 @@ class ScannerPreviewView(
     private var running = false
     private var released = false
     private var generation = 0
+    private var feedback: BeepManager? = null
     init {
         addView(camera, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
         camera.addStateListener(object : CameraPreview.StateListener {
@@ -41,6 +45,21 @@ class ScannerPreviewView(
         camera.framingRectSize = Size(pixels, pixels)
     }
 
+    /** 默认不开启反馈；true 保留 ZXing 音量与音色，振动必须由宿主显式启用。 */
+    fun setFeedbackEnabled(enabled: Boolean, vibrateEnabled: Boolean = false) {
+        if (released) return
+        if (!enabled && !vibrateEnabled) {
+            feedback = null
+            return
+        }
+        val manager = feedback ?: BeepManager(checkNotNull(context.findActivity()) {
+            "Scanner feedback requires an Activity context"
+        })
+        manager.isBeepEnabled = enabled
+        manager.isVibrateEnabled = vibrateEnabled
+        feedback = manager
+    }
+
     /** false → true 开始一次识别；一次只投递一个结果，再次扫描须由宿主显式启动。 */
     fun setRunning(value: Boolean) {
         if (released || running == value) return
@@ -50,6 +69,8 @@ class ScannerPreviewView(
             camera.decodeSingle { result ->
                 if (!released && running && current == generation && !result.text.isNullOrEmpty()) {
                     setRunning(false)
+                    // 声音/振动失败不丢弃已经识别的二维码；SDK 自行释放短音的 MediaPlayer。
+                    try { feedback?.playBeepSoundAndVibrate() } catch (_: RuntimeException) {}
                     onResult?.invoke(result.text)
                 }
             }
@@ -63,6 +84,7 @@ class ScannerPreviewView(
     fun release() {
         setRunning(false)
         released = true
+        feedback = null
         onResult = null
         onFailure = null
     }
@@ -71,4 +93,10 @@ class ScannerPreviewView(
         setRunning(false)
         super.onDetachedFromWindow()
     }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }
