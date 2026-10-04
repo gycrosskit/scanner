@@ -12,13 +12,13 @@
 
 Android/iOS 提供嵌入式预览，HarmonyOS 打开系统扫码页。纯 OpenHarmony 设备不保证有 ScanKit，失败返回 `failed`。KMP 使用 Kotlin `2.2.21-1.0.0`，Kuikly 使用 `2.28.0-2.0.21-ohos`；OHOS 工具链配置见接入指南。
 
-## 0.1.2 候选能力（待发布）
+## 0.1.3 候选能力（待发布）
 
 - Android 既有 `ScannerPreviewView` 新增 `setFeedbackEnabled(enabled, vibrateEnabled = false)`；默认行为不变，宿主显式开启后由组件在一次有效结果上播放 ZXing 声音/可选振动。权限、状态栏样式和业务结果仍归宿主。
 - HarmonyOS HAR 新增可直接注册的 `GycScannerPreviewView`，嵌入式 ScanKit Surface、进程唯一相机 owner、串行 init/start/stop/release 与帧代次由组件负责。旧 owner 成功 release 后新 View 才能 init；释放失败保留 owner 以便重试。
 - `scanner-kuikly` 新增 `ScannerPreviewView` / `ScannerPreviewAttr` / `ScannerPreviewEvent` 和 DSL `ScannerPreview`，宿主 Compose 只装配布局和业务 callback。
 
-这些新增 API 尚未发布，不由下方历史 `0.1.1` 坐标提供。设备必须提供 ScanKit，取景框、相册选择和权限 UI 仍由宿主绘制。
+0.1.2 prerelease 已保存不可变 Maven/HAR 与校验和，但 JitPack 安装器因旧 Python 运行器解析失败而未发布 Maven，OHPM `next` 已提交审核且尚不可安装。0.1.3 候选修正安装入口；下方历史 `0.1.1` 坐标不含新增 API。设备必须提供 ScanKit，取景框、相册选择和权限 UI 仍由宿主绘制。
 完整接线见[接入指南](docs/接入指南.md#嵌入式预览与反馈待发布)。
 
 ## 安装

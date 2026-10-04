@@ -4,5 +4,5 @@ plugins {
 }
 allprojects {
     group = providers.environmentVariable("GROUP").orElse("com.github.gycrosskit.scanner").get()
-    version = providers.environmentVariable("VERSION").orElse("0.1.2").get()
+    version = providers.environmentVariable("VERSION").orElse("0.1.3").get()
 }

@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
-archive=scanner-maven.tar.gz
-curl -fL --retry 3 -o "$archive" "https://github.com/gycrosskit/scanner/releases/download/${VERSION}/${archive}"
-sha256sum -c release-checksums.txt
+repository="${1:?Pass the component repository name}"
+[[ "$repository" =~ ^[a-z0-9][a-z0-9-]*$ ]] || { echo 'Invalid repository name' >&2; exit 1; }
+: "${VERSION:?JitPack must provide an immutable tag}"
+checksum="$(awk -v version="$VERSION" '$1 == version {print $2}' release-checksums.txt)"
+[[ "$checksum" =~ ^[a-f0-9]{64}$ ]] || { echo "No verified archive checksum for $VERSION" >&2; exit 1; }
+archive="${repository}-maven.tar.gz"
+curl -fL --retry 3 -o "$archive" "https://github.com/gycrosskit/${repository}/releases/download/${VERSION}/${archive}"
+echo "$checksum  $archive" | sha256sum -c -
 mkdir -p "$HOME/.m2/repository" build/release-maven
 tar -xzf "$archive" -C "$HOME/.m2/repository"
 tar -xzf "$archive" -C build/release-maven
-# metadata 在归档前正规化；安装同一校验字节，不在消费端再次改写。
-python3 scripts/check-maven.py build/release-maven com.github.gycrosskit.scanner "$VERSION" \
-  scanner-core,scanner-kuikly ios_arm64,ios_simulator_arm64,ios_x64,ohos_arm64
+# 归档在 macOS 发布前已修正 metadata 并校验；此处仅校验并安装相同字节。
