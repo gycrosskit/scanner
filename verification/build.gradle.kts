@@ -6,7 +6,7 @@ val scannerVersion = providers.gradleProperty("scannerVersion").orElse("0.1.5").
 kotlin {
     androidTarget()
     iosArm64()
-    iosX64()
+    iosX64 { binaries.framework { baseName = "ScannerConsumer" } }
     iosSimulatorArm64 { binaries.framework { baseName = "ScannerConsumer" } }
     ohosArm64()
     sourceSets {
