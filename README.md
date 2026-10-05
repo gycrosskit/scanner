@@ -2,17 +2,17 @@
 
 二维码图片解码、Android/iOS 原生相机预览和 HarmonyOS ScanKit 系统扫码。返回原始文本；业务格式校验、扫码框、提示、导航和图片选择由宿主负责。
 
-## 0.1.5 待发布候选
+## 0.1.5 prerelease
 
 Kuikly 图片解码和系统扫码等待被后台取消时，回调清理派回调用时的页面 dispatcher，并避免注册期间取消导致重复注销。调用和销毁仍要求所属页面 Kuikly Context。
 
-| 渠道 | 候选版本 | 状态 |
+| 渠道 | 当前版本 | 状态 |
 | --- | --- | --- |
-| Maven core/Kuikly | 0.1.5 | Module 6 项 JVM 回归和 OHOS 编译通过；完整制品和远程门禁待执行，尚未发布 |
+| Maven core/Kuikly | 0.1.5 | prerelease 已发布，JitPack 制品审计通过；独立消费结果见验收文档 |
 | HarmonyOS HAR | 0.1.3 | 原生源码未变，保持既有版本 |
 | Swift Package GycScannerNative | 0.1.1 | 原生源码未变，保持既有精确版本 |
 
-下方 Maven 示例与独立消费者默认版本已同步候选，远程可用性需等待 [0.1.5 远程发布验收](docs/0.1.5远程发布验收.md) 完成。
+[0.1.5 Release](https://github.com/gycrosskit/scanner/releases/tag/0.1.5) 已提供固定 Maven 归档与 SHA256SUMS；JitPack 最终状态、精确 commit 和制品审计通过。源码回归、远程渠道限制及独立消费进度见 [0.1.5 远程发布验收](docs/0.1.5远程发布验收.md)，不代表生产宿主或真实设备验收通过。
 
 ## 0.1.4 prerelease
 
@@ -41,7 +41,7 @@ Android/iOS 提供嵌入式预览；HarmonyOS 稳定版提供系统扫码页，0
 - HarmonyOS HAR 新增可直接注册的 `GycScannerPreviewView`，嵌入式 ScanKit Surface、进程唯一相机 owner、串行 init/start/stop/release 与帧代次由组件负责。旧 owner 成功 release 后新 View 才能 init；释放失败保留 owner 以便重试。
 - `scanner-kuikly` 新增 `ScannerPreviewView` / `ScannerPreviewAttr` / `ScannerPreviewEvent` 和 DSL `ScannerPreview`，宿主 Compose 只装配布局和业务 callback。
 
-[0.1.3 Release](https://github.com/gycrosskit/scanner/releases/tag/0.1.3) 提供固定 Maven/HAR 与 SHA256SUMS；JitPack 状态 `ok`，独立远程 Android/OHOS consumer 编译和 iOS Simulator Framework 最终链接通过。Release 下载 HAR 的 API 22 独立 consumer 编译通过；OHPM `next` 已接受审核，但精确版本查询与安装仍为 `NOTFOUND`，不能当作 Registry 可安装。历史验收保持对应版本，下面 Maven 安装示例为本轮待验 `0.1.5`；独立原生渠道见兼容矩阵。
+[0.1.3 Release](https://github.com/gycrosskit/scanner/releases/tag/0.1.3) 提供固定 Maven/HAR 与 SHA256SUMS；JitPack 状态 `ok`，独立远程 Android/OHOS consumer 编译和 iOS Simulator Framework 最终链接通过。Release 下载 HAR 的 API 22 独立 consumer 编译通过；OHPM `next` 已接受审核，但精确版本查询与安装仍为 `NOTFOUND`，不能当作 Registry 可安装。历史验收保持对应版本，下面 Maven 安装示例为已发布的 `0.1.5` prerelease；独立原生渠道见兼容矩阵。
 
 0.1.2 JitPack 因旧 Python 运行器解析失败；其标签和资产保留，使用修正安装入口的 0.1.3。真实声音/振动、Surface/ScanKit 与前后台仍需设备验收。完整接线见[接入指南](docs/接入指南.md#嵌入式预览与反馈)。
 
@@ -115,6 +115,12 @@ classDiagram
 // settings.gradle.kts
 dependencyResolutionManagement {
     repositories {
+        exclusiveContent {
+            forRepository {
+                maven("https://mirrors.tencent.com/nexus/repository/maven-tencent/")
+            }
+            filter { includeGroup("com.tencent.kuikly-open") }
+        }
         maven("https://jitpack.io")
         maven("https://maven.eazytec-cloud.com/nexus/repository/maven-public/")
         google()
