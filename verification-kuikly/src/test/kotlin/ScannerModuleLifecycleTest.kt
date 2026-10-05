@@ -8,6 +8,26 @@ import kotlinx.coroutines.test.*
 import kotlin.test.*
 @OptIn(ExperimentalCoroutinesApi::class)
 class ScannerModuleLifecycleTest {
+    @Test fun `empty content skips bridge and cancelled decode cannot affect next request`() = runTest {
+        val module = ScannerModule()
+        assertNull(module.decode(byteArrayOf()))
+        assertTrue(module.calls.isEmpty())
+        val old = async { module.decode(byteArrayOf(1)) }
+        runCurrent()
+        val oldResponse = module.response
+        old.cancel()
+        runCurrent()
+        assertEquals(1, module.removedCallbacks)
+        val current = async { module.decode(byteArrayOf(2)) }
+        runCurrent()
+        oldResponse(JSONObject().apply { put("status", "decoded"); put("value", "late") })
+        runCurrent()
+        assertFalse(current.isCompleted)
+        module.response(JSONObject().apply { put("status", "not_found") })
+        assertNull(current.await())
+        module.dispose()
+    }
+
     @Test fun `dispose between scan callback and dispatch cancels delivery`() = runTest {
         val module = ScannerModule()
         val result = async { module.scanCode() }

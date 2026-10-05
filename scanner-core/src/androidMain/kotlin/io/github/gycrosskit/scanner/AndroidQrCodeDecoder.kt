@@ -9,7 +9,7 @@ import com.google.zxing.qrcode.QRCodeReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-/** Android 相册二维码解码器；与相机预览分离，避免 Page 为解码能力持有 UI renderer。 */
+/** Android 相册二维码解码器；在 Default dispatcher 解码，长边采样至最多 2048 px，不持有 UI renderer。 */
 object AndroidQrCodeDecoder : QrCodeDecoder {
     override suspend fun decode(bytes: ByteArray): String? = withContext(Dispatchers.Default) {
         if (bytes.isEmpty()) return@withContext null

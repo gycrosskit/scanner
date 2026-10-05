@@ -11,7 +11,12 @@ import com.journeyapps.barcodescanner.CameraPreview
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.journeyapps.barcodescanner.Size
 
-/** 主线程调用；宿主先申请 CAMERA 权限，在 onPause/离开组合时暂停，在销毁时 release。 */
+/**
+ * 主线程创建和操作；宿主先申请 CAMERA 权限，在 onPause/离开组合时暂停，在销毁时 release。
+ * @param context 用于相机 View 的宿主 Context；开启声音或振动时必须可解析出 Activity。
+ * @param onFailure 当前扫描期的相机失败回调，默认 null；暂停后迟到错误忽略。
+ * @param onResult 当前扫描期的单次二维码原始文本回调，可为 null；release 时释放引用。
+ */
 class ScannerPreviewView(
     context: Context,
     private var onFailure: ((Exception) -> Unit)? = null,
@@ -40,12 +45,17 @@ class ScannerPreviewView(
         })
     }
 
+    /** 设置正方形识别区，不绘制取景框。@param pixels 边长，正整数 px。 */
     fun setScanFrameSize(pixels: Int) {
         require(pixels > 0)
         camera.framingRectSize = Size(pixels, pixels)
     }
 
-    /** 默认不开启反馈；true 保留 ZXing 音量与音色，振动必须由宿主显式启用。 */
+    /**
+     * 默认不开启反馈；保留 ZXing 音量与音色，反馈失败不丢弃已识别结果。
+     * @param enabled 是否播放提示音。
+     * @param vibrateEnabled 默认 false，振动须由宿主声明权限并显式启用。
+     */
     fun setFeedbackEnabled(enabled: Boolean, vibrateEnabled: Boolean = false) {
         if (released) return
         if (!enabled && !vibrateEnabled) {
@@ -60,7 +70,10 @@ class ScannerPreviewView(
         feedback = manager
     }
 
-    /** false → true 开始一次识别；一次只投递一个结果，再次扫描须由宿主显式启动。 */
+    /**
+     * false → true 开始一次识别；一次只投递一个结果，结果后再次扫描须显式启动。
+     * @param value false 停止解码并暂停相机；release 后忽略。
+     */
     fun setRunning(value: Boolean) {
         if (released || running == value) return
         running = value
@@ -81,6 +94,7 @@ class ScannerPreviewView(
         }
     }
 
+    /** 主线程幂等释放相机和宿主回调；此实例不可再次启动。 */
     fun release() {
         setRunning(false)
         released = true
