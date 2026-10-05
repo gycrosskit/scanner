@@ -7,7 +7,9 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 /** 只承载 ScanKit 相机预览；取景框、权限说明、相册和扫码业务由公共 Page 负责。 */
 @Observed
 export class GycScannerPreviewView extends KuiklyRenderBaseView {
+  /** 与 Kotlin ScannerPreviewView.NAME 一致的原生 View 注册名。 */
   static readonly VIEW_NAME: string = 'GycScannerPreviewView';
+  /** 本 View 独占的 XComponent Surface controller，由 ArkUI 挂载和销毁。 */
   readonly surfaceController: XComponentController = new XComponentController();
   private running: boolean = false;
   private destroyed: boolean = false;
@@ -48,14 +50,17 @@ export class GycScannerPreviewView extends KuiklyRenderBaseView {
       wrapBuilder<[KuiklyRenderBaseView]>(createScannerPreview), this);
   }
 
+  /** ArkUI Surface 创建后调用；尺寸有效且 running 时启动预览。 */
   surfaceLoaded(): void {
     if (this.destroyed) return;
     this.surfaceId = this.surfaceController.getXComponentSurfaceId();
     this.synchronize();
   }
 
+  /** ArkUI Surface 销毁时撤销当前代次并排队释放相机。 */
   surfaceDestroyed(): void { this.surfaceId = ''; this.synchronize(); }
 
+  /** @param area XComponent 的 vp 尺寸；无效/零尺寸不会启动相机。 */
   areaChanged(area: Area): void {
     const width = Number(area.width);
     const height = Number(area.height);

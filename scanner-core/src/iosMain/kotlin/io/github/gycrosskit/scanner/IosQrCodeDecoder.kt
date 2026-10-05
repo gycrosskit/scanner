@@ -7,7 +7,11 @@ import platform.Foundation.NSData
 import platform.Foundation.create
 
 /** Swift 宿主以 GycScannerNative.QrCodeDecoder.decode(data:) 实现此桥。 */
-fun interface IosQrCodeBridge { fun decode(data: NSData): String? }
+fun interface IosQrCodeBridge {
+    /** 同步读取图片，不保留调用方数据；无效图片/无码返回 null。@param data 完整图片字节。 */
+    fun decode(data: NSData): String?
+}
+/** 将非空图片复制为 NSData 并调用 Swift 桥，不自动切换线程。@param bridge 宿主的 CoreImage 解码桥。 */
 class IosQrCodeDecoder(private val bridge: IosQrCodeBridge) : QrCodeDecoder {
     override suspend fun decode(bytes: ByteArray): String? {
         if (bytes.isEmpty()) return null

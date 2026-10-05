@@ -4,7 +4,13 @@ import { fileIo as fs, fileUri } from '@kit.CoreFileKit';
 import { util } from '@kit.ArkTS';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-export interface ScanResult { status: string; value?: string; }
+/** 扫码终态；decoded 才有原始文本，cancelled 不等于 SDK 失败。 */
+export interface ScanResult {
+  /** decoded/not_found/busy/cancelled/permission_denied/failed/invalid_content。 */
+  status: string;
+  /** 仅识别成功时提供，不校验业务格式。 */
+  value?: string;
+}
 
 /** 一个页面持有一个实例，离开页面 dispose；系统扫码页无法通过 ScanKit 主动关闭。 */
 export class GycScanner {
@@ -13,8 +19,10 @@ export class GycScanner {
   private sequence: number = 0;
   private readonly identifier: string = util.generateRandomUUID(true);
   private readonly context: common.UIAbilityContext;
+  /** @param context 当前页面 UIAbility，用其 cacheDir 保存临时图片；生命周期由宿主管理。 */
   constructor(context: common.UIAbilityContext) { this.context = context; }
 
+  /** 主线程打开系统扫码页，宿主先申请 CAMERA；并行调用返回 busy，dispose 抑制迟到结果。 */
   async scan(): Promise<ScanResult> {
     if (this.destroyed) { return { status: 'cancelled' }; }
     if (this.scanning) { return { status: 'busy' }; }
@@ -33,6 +41,7 @@ export class GycScanner {
     } finally { this.scanning = false; }
   }
 
+  /** 解码完整图片并在终态清理临时文件。@param bytes 1..32 MiB 图片；不支持时返回失败状态。 */
   async decode(bytes: ArrayBuffer): Promise<ScanResult> {
     if (this.destroyed) { return { status: 'cancelled' }; }
     if (bytes.byteLength === 0 || bytes.byteLength > 32 * 1024 * 1024) {
@@ -60,5 +69,6 @@ export class GycScanner {
     finally { try { await fs.unlink(path); } catch (_) { /* 系统可能已清理缓存。 */ } }
   }
 
+  /** 主线程幂等撤销实例；不主动关闭系统扫码页，已开始的文件任务完成后清理。 */
   dispose(): void { this.destroyed = true; }
 }

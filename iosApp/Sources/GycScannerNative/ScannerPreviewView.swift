@@ -13,6 +13,11 @@ public final class ScannerPreviewView: UIView, AVCaptureMetadataOutputObjectsDel
     private var released = false
     private var scanFrameSize: CGFloat
 
+    /// 创建相机预览，不主动申请权限；错误与结果交付到主线程。
+    /// - Parameters:
+    ///   - scanFrameSize: 正方形识别区边长，points，默认 240；宿主传正且有限的值。
+    ///   - onResult: 单次二维码原始文本，结果后停止扫描。
+    ///   - onFailure: 设备/权限失败诊断码，由宿主映射用户文案。
     public init(scanFrameSize: CGFloat = 240, onResult: @escaping (String) -> Void,
                 onFailure: @escaping (String) -> Void) {
         self.scanFrameSize = scanFrameSize
@@ -49,6 +54,7 @@ public final class ScannerPreviewView: UIView, AVCaptureMetadataOutputObjectsDel
         updateRegion()
     }
 
+    /// 设置正且有限的识别区边长，points；不绘制取景框。
     public func setScanFrameSize(_ points: CGFloat) {
         precondition(points > 0 && points.isFinite)
         scanFrameSize = points
@@ -70,6 +76,7 @@ public final class ScannerPreviewView: UIView, AVCaptureMetadataOutputObjectsDel
         }
     }
 
+    /// 主线程幂等释放 delegate 和回调；此 View 不可再次启动。
     public func releaseCamera() {
         setRunning(false)
         released = true

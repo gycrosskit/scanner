@@ -1,7 +1,10 @@
 import CoreImage
 
 /** CoreImage 只负责媒体 primitive，二维码业务格式仍由 shared 校验。 */
+/// 原始二维码图片解码入口；调用线程执行，不包含相机 UI 或业务格式校验。
 public enum QrCodeDecoder {
+    /// 返回首个非空二维码文本；无效图片/无二维码返回 nil。
+    /// - Parameter data: 完整图片文件数据。
     public static func decode(data: Data) -> String? {
         guard let image = CIImage(data: data),
               let detector = CIDetector(

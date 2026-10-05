@@ -3,7 +3,9 @@ import { util } from '@kit.ArkTS';
 import { GycScanner, ScanResult } from './GycScanner';
 interface DecodeArgs { data?: string; }
 
+/** 每页的异步扫码桥；销毁后停止回执，Base64 输入限制为 32 MiB 图片。 */
 export class GycScannerModule extends KuiklyRenderBaseModule {
+  /** 原生注册名，与 Kotlin ScannerModule.NAME 一致。 */
   static readonly MODULE_NAME: string = 'GycScanner';
   private scanner: GycScanner | null = null;
   private destroyed: boolean = false;
