@@ -48,7 +48,7 @@ jobs:
           java-version: '17'
           cache: gradle
       - run: test -f "$ANDROID_HOME/platforms/android-36/android.jar"
-      - run: bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" :scanner-core:testDebugUnitTest :scanner-core:compileDebugKotlinAndroid --no-daemon --max-workers=1
+      - run: bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :scanner-core:testDebugUnitTest :scanner-core:compileDebugKotlinAndroid --no-daemon --max-workers=1
       - run: |
           curl --fail --silent --show-error --max-time 60 -o "$RUNNER_TEMP/kotlin-jvm-plugin.pom" -w "Kotlin JVM marker HTTP %{http_code}\n" https://maven.eazytec-cloud.com/nexus/repository/maven-public/org/jetbrains/kotlin/jvm/org.jetbrains.kotlin.jvm.gradle.plugin/2.2.21-1.0.0/org.jetbrains.kotlin.jvm.gradle.plugin-2.2.21-1.0.0.pom
           bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification-kuikly test --refresh-dependencies --info --no-daemon --max-workers=1
@@ -70,7 +70,7 @@ jobs:
             x86_64) native_target=IosX64; native_test=iosX64Test ;;
             *) echo "Unsupported macOS architecture" >&2; exit 1 ;;
           esac
-          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" :scanner-core:compileKotlinIosArm64 :scanner-core:compileKotlin${native_target} :scanner-core:compileKotlinOhosArm64 :scanner-kuikly:compileKotlinOhosArm64 --no-daemon --max-workers=1
+          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :scanner-core:compileKotlinIosArm64 :scanner-core:compileKotlin${native_target} :scanner-core:compileKotlinOhosArm64 :scanner-kuikly:compileKotlinOhosArm64 --no-daemon --max-workers=1
       - run: xcrun swiftc -typecheck -target "$(uname -m)-apple-ios15.0-simulator" -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" iosApp/Sources/GycScannerNative/*.swift
   release-android:
     if: github.event_name == 'pull_request' || github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')
