@@ -1,5 +1,9 @@
 # 更新日志
 
+## 0.1.5（待发布）
+
+Kuikly decode/scanCode 的后台取消清理派回调用时的页面 dispatcher；注册期间取消也只注销一次 callback。补齐页面 Context 合同和后台取消交错检查。Maven 制品与远程消费待验；HAR 保持 `0.1.3`，Swift Package 保持 `0.1.1`。
+
 ## 0.1.4
 
 修复 Kuikly scan/decode 回调已完成但协程尚未消费时页面销毁的迟交付，保留请求归属和 native cancel。新 POM 补齐 Apache-2.0 元数据。

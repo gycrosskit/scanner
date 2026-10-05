@@ -8,13 +8,19 @@ open class Module {
     val calls = mutableListOf<Pair<String, String>>()
     val cancelled = mutableListOf<JSONObject>()
     var removedCallbacks = 0
+    val callbackRemovalThreads = mutableListOf<Thread>()
+    var beforeReturn: () -> Unit = {}
     open fun moduleName() = ""
     fun toNative(sync: Boolean, method: String, args: String,
                  callback: (JSONObject?) -> Unit, keepAlive: Boolean): NativeResult {
         calls += method to args
         response = callback
+        beforeReturn()
         return NativeResult(CallbackRef())
     }
     fun asyncToNativeMethod(method: String, args: JSONObject, callback: Any?) { cancelled += args }
-    fun removeCallback(ref: CallbackRef) { removedCallbacks++ }
+    fun removeCallback(ref: CallbackRef) {
+        removedCallbacks++
+        callbackRemovalThreads += Thread.currentThread()
+    }
 }

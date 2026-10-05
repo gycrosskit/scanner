@@ -2,6 +2,18 @@
 
 二维码图片解码、Android/iOS 原生相机预览和 HarmonyOS ScanKit 系统扫码。返回原始文本；业务格式校验、扫码框、提示、导航和图片选择由宿主负责。
 
+## 0.1.5 待发布候选
+
+Kuikly 图片解码和系统扫码等待被后台取消时，回调清理派回调用时的页面 dispatcher，并避免注册期间取消导致重复注销。调用和销毁仍要求所属页面 Kuikly Context。
+
+| 渠道 | 候选版本 | 状态 |
+| --- | --- | --- |
+| Maven core/Kuikly | 0.1.5 | Module 6 项 JVM 回归和 OHOS 编译通过；完整制品和远程门禁待执行，尚未发布 |
+| HarmonyOS HAR | 0.1.3 | 原生源码未变，保持既有版本 |
+| Swift Package GycScannerNative | 0.1.1 | 原生源码未变，保持既有精确版本 |
+
+下方 Maven 示例与独立消费者默认版本已同步候选，远程可用性需等待 [0.1.5 远程发布验收](docs/0.1.5远程发布验收.md) 完成。
+
 ## 0.1.4 prerelease
 
 修复 Kuikly scan/decode 回调已完成但协程尚未消费时页面销毁的迟交付，保留请求归属和 native cancel。新 POM 补齐 Apache-2.0 元数据。
@@ -29,7 +41,7 @@ Android/iOS 提供嵌入式预览；HarmonyOS 稳定版提供系统扫码页，0
 - HarmonyOS HAR 新增可直接注册的 `GycScannerPreviewView`，嵌入式 ScanKit Surface、进程唯一相机 owner、串行 init/start/stop/release 与帧代次由组件负责。旧 owner 成功 release 后新 View 才能 init；释放失败保留 owner 以便重试。
 - `scanner-kuikly` 新增 `ScannerPreviewView` / `ScannerPreviewAttr` / `ScannerPreviewEvent` 和 DSL `ScannerPreview`，宿主 Compose 只装配布局和业务 callback。
 
-[0.1.3 Release](https://github.com/gycrosskit/scanner/releases/tag/0.1.3) 提供固定 Maven/HAR 与 SHA256SUMS；JitPack 状态 `ok`，独立远程 Android/OHOS consumer 编译和 iOS Simulator Framework 最终链接通过。Release 下载 HAR 的 API 22 独立 consumer 编译通过；OHPM `next` 已接受审核，但精确版本查询与安装仍为 `NOTFOUND`，不能当作 Registry 可安装。历史验收保持 0.1.3，下面 Maven 安装示例为本轮待验 0.1.4；独立原生渠道见兼容矩阵。
+[0.1.3 Release](https://github.com/gycrosskit/scanner/releases/tag/0.1.3) 提供固定 Maven/HAR 与 SHA256SUMS；JitPack 状态 `ok`，独立远程 Android/OHOS consumer 编译和 iOS Simulator Framework 最终链接通过。Release 下载 HAR 的 API 22 独立 consumer 编译通过；OHPM `next` 已接受审核，但精确版本查询与安装仍为 `NOTFOUND`，不能当作 Registry 可安装。历史验收保持对应版本，下面 Maven 安装示例为本轮待验 `0.1.5`；独立原生渠道见兼容矩阵。
 
 0.1.2 JitPack 因旧 Python 运行器解析失败；其标签和资产保留，使用修正安装入口的 0.1.3。真实声音/振动、Surface/ScanKit 与前后台仍需设备验收。完整接线见[接入指南](docs/接入指南.md#嵌入式预览与反馈)。
 
@@ -113,10 +125,10 @@ dependencyResolutionManagement {
 
 ```kotlin
 commonMain.dependencies {
-    implementation("com.github.gycrosskit.scanner:scanner-core:0.1.4")
+    implementation("com.github.gycrosskit.scanner:scanner-core:0.1.5")
 }
 ohosArm64Main.dependencies {
-    implementation("com.github.gycrosskit.scanner:scanner-kuikly:0.1.4")
+    implementation("com.github.gycrosskit.scanner:scanner-kuikly:0.1.5")
 }
 ```
 
@@ -167,4 +179,4 @@ HarmonyOS 同实例只允许一个系统扫码请求；销毁时 `dispose()` 取
 
 Apache-2.0，见 [LICENSE](LICENSE)。
 
-本轮制品校验与远程状态见 [0.1.4 发布验收](docs/发布验收-0.1.4.md)。
+本轮状态见 [0.1.5 远程发布验收](docs/0.1.5远程发布验收.md)；既有制品与远程记录见 [0.1.4 发布验收](docs/发布验收-0.1.4.md)。

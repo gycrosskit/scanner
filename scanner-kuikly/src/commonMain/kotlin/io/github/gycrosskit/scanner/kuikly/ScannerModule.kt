@@ -6,11 +6,16 @@ import com.tencent.kuikly.core.module.Module
 import com.tencent.kuikly.core.nvi.serialization.json.JSONObject
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.ContinuationInterceptor
+import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resume
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
+/** 每页一个实例；调用协程使用页面 dispatcher，dispose 在同一 Kuikly Context 执行。 */
 @OptIn(ExperimentalEncodingApi::class)
 class ScannerModule : Module(), QrCodeDecoder {
     private var disposed = false
@@ -35,18 +40,26 @@ class ScannerModule : Module(), QrCodeDecoder {
 
     private suspend fun await(method: String, args: JSONObject): JSONObject? {
         if (disposed) return null
+        val dispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
         val response = suspendCancellableCoroutine<JSONObject?> { continuation ->
             pending.add(continuation)
             var callbackRef: CallbackRef? = null
             continuation.invokeOnCancellation {
-                pending.remove(continuation)
-                callbackRef?.let(::removeCallback)
+                // 取消可来自后台；直接投页面 dispatcher，不依赖已取消的 Job。
+                dispatcher.dispatch(EmptyCoroutineContext) {
+                    pending.remove(continuation)
+                    callbackRef?.let(::removeCallback)
+                    callbackRef = null
+                }
             }
             callbackRef = toNative(false, method, args.toString(), { response ->
                 pending.remove(continuation)
                 if (continuation.isActive) continuation.resume(response)
             }, false).callbackRef
-            if (!continuation.isActive) callbackRef?.let(::removeCallback)
+            if (!continuation.isActive) {
+                callbackRef?.let(::removeCallback)
+                callbackRef = null
+            }
         }
         // 原生回调已完成也可能尚未调度消费；页面销毁后不能再投递二维码。
         if (disposed) throw CancellationException("ScannerModule is disposed")

@@ -2,7 +2,7 @@ plugins {
     kotlin("multiplatform") version "2.2.21-1.0.0"
     id("com.android.library") version "8.10.1"
 }
-val scannerVersion = providers.gradleProperty("scannerVersion").orElse("0.1.4").get()
+val scannerVersion = providers.gradleProperty("scannerVersion").orElse("0.1.5").get()
 kotlin {
     androidTarget()
     iosArm64()
