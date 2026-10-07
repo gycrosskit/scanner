@@ -79,6 +79,7 @@ jobs:
             *) echo "Unsupported macOS architecture" >&2; exit 1 ;;
           esac
           bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :scanner-core:compileKotlinIosArm64 :scanner-core:compileKotlin${native_target} :scanner-core:compileKotlinOhosArm64 :scanner-kuikly:compileKotlinIosArm64 :scanner-kuikly:compileKotlin${native_target} :scanner-kuikly:compileKotlinOhosArm64 --no-daemon --max-workers=1 --stacktrace
+      - run: python3 tests/run-scanner-roi.py "$RUNNER_TEMP/scanner-roi-fixed"
       - run: xcrun swiftc -typecheck -target "$(uname -m)-apple-ios15.0-simulator" -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" iosApp/Sources/GycScannerNative/*.swift
   release-android:
     if: github.event_name == 'pull_request' || github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')
@@ -116,6 +117,9 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: gradle
+      - run: |
+          python3 verification/ci/test_fork_host.py
+          bash scripts/ci-pin-fork-host.sh
       - run: bash scripts/ci-release.sh
       - run: |
           case "$(uname -m)" in
@@ -130,4 +134,4 @@ jobs:
             render_dir=$(bash scripts/ci-build-kuikly-render.sh "$RUNNER_TEMP/kuikly-ios-render")
             render_args=("-PkuiklyRenderFrameworkDir=$render_dir")
           fi
-          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification linkDebugFramework${native_target} compileKotlinOhosArm64 -PscannerVersion="$VERSION" -PverifyUnifiedUi="$unified_ui" "${render_args[@]}" --refresh-dependencies --no-daemon --max-workers=1
+          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification linkDebugFramework${native_target} compileKotlinOhosArm64 -PscannerVersion="$VERSION" -PverifyUnifiedUi="$unified_ui" "${render_args[@]}" --refresh-dependencies --no-daemon --max-workers=1 --stacktrace

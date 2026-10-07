@@ -13,6 +13,8 @@ public final class ScannerPreviewView: UIView, AVCaptureMetadataOutputObjectsDel
     private var running = false
     private var released = false
     private var scanFrameSize: CGFloat
+    private var generation: UInt64 = 0
+    private var configuredRegion: CGRect?
 
     /// 创建相机预览，不主动申请权限；错误与结果交付到主线程。
     /// - Parameters:
@@ -21,6 +23,7 @@ public final class ScannerPreviewView: UIView, AVCaptureMetadataOutputObjectsDel
     ///   - onFailure: 设备/权限失败诊断码，由宿主映射用户文案。
     public init(scanFrameSize: CGFloat = 240, onResult: @escaping (String) -> Void,
                 onFailure: @escaping (String) -> Void) {
+        precondition(scanFrameSize > 0 && scanFrameSize.isFinite)
         self.scanFrameSize = scanFrameSize
         self.onResult = onResult
         self.onFailure = onFailure
@@ -58,7 +61,9 @@ public final class ScannerPreviewView: UIView, AVCaptureMetadataOutputObjectsDel
     /// 设置正且有限的识别区边长，points；不绘制取景框。
     public func setScanFrameSize(_ points: CGFloat) {
         precondition(points > 0 && points.isFinite)
+        guard points != scanFrameSize else { return }
         scanFrameSize = points
+        configuredRegion = nil
         setNeedsLayout()
     }
 
@@ -71,13 +76,17 @@ public final class ScannerPreviewView: UIView, AVCaptureMetadataOutputObjectsDel
     public func setRunning(_ value: Bool) {
         guard !released, value != running else { return }
         running = value
-        sessionQueue.async { [session] in
+        generation &+= 1
+        configuredRegion = nil
+        let expectedGeneration = generation
+        sessionQueue.async { [weak self, session] in
             if value && !session.isRunning { session.startRunning() }
             else if !value && session.isRunning { session.stopRunning() }
-        }
-        if value {
-            sessionQueue.async { [weak self] in
-                DispatchQueue.main.async { self?.updateRegion() }
+            if value {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self, self.generation == expectedGeneration else { return }
+                    self.updateRegion()
+                }
             }
         }
     }
@@ -98,19 +107,33 @@ public final class ScannerPreviewView: UIView, AVCaptureMetadataOutputObjectsDel
     }
 
     private func updateRegion() {
-        guard running, !released, session.isRunning, !bounds.isEmpty else { return }
+        guard running, !released, session.isRunning, !bounds.isEmpty else {
+            configuredRegion = nil
+            return
+        }
         let side = min(scanFrameSize, bounds.width, bounds.height)
         let rect = CGRect(x: (bounds.width-side)/2, y: (bounds.height-side)/2, width: side, height: side)
         let region = preview.metadataOutputRectConverted(fromLayerRect: rect).standardized
             .intersection(CGRect(x: 0, y: 0, width: 1, height: 1))
-        if !region.isNull && !region.isEmpty { output.rectOfInterest = region }
+        guard region != configuredRegion else { return }
+        configuredRegion = nil
+        guard !region.isNull, !region.isEmpty,
+              [region.minX, region.minY, region.width, region.height].allSatisfy({ $0.isFinite }) else { return }
+        output.rectOfInterest = region
+        configuredRegion = region
     }
 
     public func metadataOutput(_ output: AVCaptureMetadataOutput,
                               didOutput objects: [AVMetadataObject], from connection: AVCaptureConnection) {
-        guard running, !released,
-              let text = objects.compactMap({ ($0 as? AVMetadataMachineReadableCodeObject)?.stringValue })
-                .first(where: { !$0.isEmpty }) else { return }
+        guard output === self.output, running, !released, let region = configuredRegion else { return }
+        let code = objects.compactMap { $0 as? AVMetadataMachineReadableCodeObject }.first { code in
+            let rect = code.bounds.standardized
+            let intersection = rect.intersection(region)
+            return code.type == .qr &&
+                [rect.minX, rect.minY, rect.width, rect.height].allSatisfy({ $0.isFinite }) &&
+                !intersection.isNull && !intersection.isEmpty && !(code.stringValue ?? "").isEmpty
+        }
+        guard let text = code?.stringValue else { return }
         setRunning(false)
         onFeedback?()
         onResult?(text)

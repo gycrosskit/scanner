@@ -3,7 +3,7 @@ plugins {
     id("com.android.library") version "8.10.1"
     kotlin("plugin.compose") version "2.2.21-1.0.0" apply false
 }
-val scannerVersion = providers.gradleProperty("scannerVersion").orElse("0.1.5").get()
+val scannerVersion = providers.gradleProperty("scannerVersion").orElse("0.1.6").get()
 val verifyUnifiedUi = providers.gradleProperty("verifyUnifiedUi").orElse("false").get().toBoolean()
 val kuiklyRenderFrameworkDir = providers.gradleProperty("kuiklyRenderFrameworkDir").orNull
 if (verifyUnifiedUi) apply(plugin = "org.jetbrains.kotlin.plugin.compose")
