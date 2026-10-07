@@ -50,9 +50,12 @@ jobs:
           java-version: '17'
           cache: gradle
       - run: test -f "$ANDROID_HOME/platforms/android-36/android.jar"
+      - run: |
+          python3 verification/ci/test_fork_host.py
+          bash scripts/ci-pin-fork-host.sh
       - run: bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :scanner-core:testDebugUnitTest :scanner-core:compileDebugKotlinAndroid :scanner-kuikly:compileDebugKotlinAndroid --no-daemon --max-workers=1
       - run: |
-          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification-kuikly test --refresh-dependencies --info --no-daemon --max-workers=1
+          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification-kuikly test --refresh-dependencies --info --stacktrace --no-daemon --max-workers=1
   native:
     if: github.event_name != 'release' && (github.event_name != 'workflow_dispatch' || inputs.version == '')
     runs-on: macos-15
