@@ -24,6 +24,7 @@ defaults:
     shell: bash
 jobs:
   contracts:
+    if: github.event_name != 'release' && (github.event_name != 'workflow_dispatch' || inputs.version == '')
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -36,6 +37,7 @@ jobs:
           python3 scripts/test-jitpack-metadata.py
           TYPESCRIPT_PATH="$RUNNER_TEMP/ci-tools/node_modules/typescript" node --test tests/scanner.cjs tests/scanner-preview.cjs
   android:
+    if: github.event_name != 'release' && (github.event_name != 'workflow_dispatch' || inputs.version == '')
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -52,6 +54,7 @@ jobs:
       - run: |
           bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification-kuikly test --refresh-dependencies --info --no-daemon --max-workers=1
   native:
+    if: github.event_name != 'release' && (github.event_name != 'workflow_dispatch' || inputs.version == '')
     runs-on: macos-15
     timeout-minutes: 60
     steps:
@@ -76,7 +79,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      VERSION: ${{ github.event.release.tag_name || inputs.version || '0.1.5' }}
+      VERSION: ${{ github.event.release.tag_name || inputs.version || '0.1.6' }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
@@ -97,7 +100,7 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 60
     env:
-      VERSION: ${{ github.event.release.tag_name || inputs.version || '0.1.5' }}
+      VERSION: ${{ github.event.release.tag_name || inputs.version || '0.1.6' }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
@@ -116,4 +119,9 @@ jobs:
           esac
           unified_ui=true
           case "$VERSION" in 0.1.2|0.1.3|0.1.4|0.1.5) unified_ui=false ;; esac
-          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification linkDebugFramework${native_target} compileKotlinOhosArm64 -PscannerVersion="$VERSION" -PverifyUnifiedUi="$unified_ui" --refresh-dependencies --no-daemon --max-workers=1
+          render_args=()
+          if [[ "$unified_ui" == true ]]; then
+            render_dir=$(bash scripts/ci-build-kuikly-render.sh "$RUNNER_TEMP/kuikly-ios-render")
+            render_args=("-PkuiklyRenderFrameworkDir=$render_dir")
+          fi
+          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification linkDebugFramework${native_target} compileKotlinOhosArm64 -PscannerVersion="$VERSION" -PverifyUnifiedUi="$unified_ui" "${render_args[@]}" --refresh-dependencies --no-daemon --max-workers=1
