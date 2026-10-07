@@ -5,12 +5,19 @@ plugins {
 }
 val scannerVersion = providers.gradleProperty("scannerVersion").orElse("0.1.5").get()
 val verifyUnifiedUi = providers.gradleProperty("verifyUnifiedUi").orElse("false").get().toBoolean()
+val kuiklyRenderFrameworkDir = providers.gradleProperty("kuiklyRenderFrameworkDir").orNull
 if (verifyUnifiedUi) apply(plugin = "org.jetbrains.kotlin.plugin.compose")
 kotlin {
     androidTarget()
     iosArm64()
-    iosX64 { binaries.framework { baseName = "ScannerConsumer" } }
-    iosSimulatorArm64 { binaries.framework { baseName = "ScannerConsumer" } }
+    iosX64 { binaries.framework {
+        baseName = "ScannerConsumer"
+        if (verifyUnifiedUi) kuiklyRenderFrameworkDir?.let { linkerOpts("-F$it", "-framework", "OpenKuiklyIOSRender") }
+    } }
+    iosSimulatorArm64 { binaries.framework {
+        baseName = "ScannerConsumer"
+        if (verifyUnifiedUi) kuiklyRenderFrameworkDir?.let { linkerOpts("-F$it", "-framework", "OpenKuiklyIOSRender") }
+    } }
     ohosArm64()
     sourceSets {
         commonMain {
