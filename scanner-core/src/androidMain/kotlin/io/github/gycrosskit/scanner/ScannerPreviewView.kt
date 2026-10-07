@@ -29,6 +29,7 @@ class ScannerPreviewView(
     private var released = false
     private var generation = 0
     private var feedback: BeepManager? = null
+    private var onFeedback: (() -> Unit)? = null
     init {
         addView(camera, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
         camera.addStateListener(object : CameraPreview.StateListener {
@@ -70,6 +71,11 @@ class ScannerPreviewView(
         feedback = manager
     }
 
+    /** 与 iOS/Kuikly Compose 同语义的宿主反馈；默认无反馈，异常不丢结果。使用时关闭原生声音扩展避免重复。 */
+    fun setFeedbackHandler(handler: (() -> Unit)?) {
+        if (!released) onFeedback = handler
+    }
+
     /**
      * false → true 开始一次识别；一次只投递一个结果，结果后再次扫描须显式启动。
      * @param value false 停止解码并暂停相机；release 后忽略。
@@ -84,6 +90,7 @@ class ScannerPreviewView(
                     setRunning(false)
                     // 声音/振动失败不丢弃已经识别的二维码；SDK 自行释放短音的 MediaPlayer。
                     try { feedback?.playBeepSoundAndVibrate() } catch (_: RuntimeException) {}
+                    runCatching { onFeedback?.invoke() }
                     onResult?.invoke(result.text)
                 }
             }
@@ -99,6 +106,7 @@ class ScannerPreviewView(
         setRunning(false)
         released = true
         feedback = null
+        onFeedback = null
         onResult = null
         onFailure = null
     }

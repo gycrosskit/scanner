@@ -6,16 +6,16 @@ import com.tencent.kuikly.core.base.ViewContainer
 import com.tencent.kuikly.core.base.event.Event
 import com.tencent.kuikly.core.nvi.serialization.json.JSONObject
 
-/** OHOS 原生 ScanKit 预览；宿主提供尺寸、权限、取景框和业务 UI。 */
+/** 三端共用的原生预览协议；Android/iOS 宿主注册 View 并委托 core/Swift 预览，OHOS 注册 HAR View。 */
 class ScannerPreviewView : DeclarativeBaseView<ScannerPreviewAttr, ScannerPreviewEvent>() {
     override fun viewName() = NAME
     override fun createAttr() = ScannerPreviewAttr()
     override fun createEvent() = ScannerPreviewEvent()
 
-    companion object { /** OHOS 原生预览 View 注册名。 */ const val NAME = "GycScannerPreviewView" }
+    companion object { /** 三端原生预览 View 注册名。 */ const val NAME = "GycScannerPreviewView" }
 }
 
-/** OHOS 原生预览属性；宿主在 Kuikly Context 设置。 */
+/** 原生预览属性；宿主在 Kuikly Context 设置，逻辑尺寸由各平台注册 View 转成 px/points/vp。 */
 class ScannerPreviewAttr : Attr() {
     /** true 开始一次扫描，false 停止；结果后需显式重启。@param value 是否运行相机。 */
     fun running(value: Boolean) { setProp("running", value) }

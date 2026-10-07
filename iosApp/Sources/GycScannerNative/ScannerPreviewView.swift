@@ -9,6 +9,7 @@ public final class ScannerPreviewView: UIView, AVCaptureMetadataOutputObjectsDel
     private let preview: AVCaptureVideoPreviewLayer
     private var onResult: ((String) -> Void)?
     private var onFailure: ((String) -> Void)?
+    private var onFeedback: (() -> Void)?
     private var running = false
     private var released = false
     private var scanFrameSize: CGFloat
@@ -61,6 +62,11 @@ public final class ScannerPreviewView: UIView, AVCaptureMetadataOutputObjectsDel
         setNeedsLayout()
     }
 
+    /// 与 Android/Kuikly Compose 相同的宿主反馈入口；默认无反馈，在有效结果之后仅调用一次。
+    public func setFeedbackHandler(_ handler: (() -> Void)?) {
+        if !released { onFeedback = handler }
+    }
+
     /// 一个 true 周期仅返回一次；结果后调用 true 可开始下一次扫描。
     public func setRunning(_ value: Bool) {
         guard !released, value != running else { return }
@@ -82,6 +88,7 @@ public final class ScannerPreviewView: UIView, AVCaptureMetadataOutputObjectsDel
         released = true
         onResult = nil
         onFailure = nil
+        onFeedback = nil
         output.setMetadataObjectsDelegate(nil, queue: nil)
     }
 
@@ -105,6 +112,7 @@ public final class ScannerPreviewView: UIView, AVCaptureMetadataOutputObjectsDel
               let text = objects.compactMap({ ($0 as? AVMetadataMachineReadableCodeObject)?.stringValue })
                 .first(where: { !$0.isEmpty }) else { return }
         setRunning(false)
+        onFeedback?()
         onResult?(text)
     }
 
