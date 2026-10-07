@@ -5,6 +5,7 @@ sourceSets.test {
     // 直接编译生产源码，Kuikly 传输替身仅在该独立测试工程存在。
     kotlin.srcDirs("../scanner-kuikly/src/commonMain/kotlin", "../scanner-core/src/commonMain/kotlin")
     kotlin.exclude("**/ScannerPreviewView.kt")
+    kotlin.exclude("**/ScannerPreviewHost.kt")
 }
 dependencies {
     testImplementation(kotlin("test-junit"))

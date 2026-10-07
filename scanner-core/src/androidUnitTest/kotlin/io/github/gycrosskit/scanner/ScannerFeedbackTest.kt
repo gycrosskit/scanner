@@ -32,11 +32,14 @@ class ScannerFeedbackTest {
         val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
         val values = mutableListOf<String>()
         val view = ScannerPreviewView(activity, onResult = values::add)
+        var hostFeedback = 0
+        view.setFeedbackHandler { hostFeedback++ }
         view.setRunning(true)
         val first = BarcodeViewBoundary.callbacks.last()
         first.barcodeResult(result("first"))
         first.barcodeResult(result("duplicate"))
         assertEquals(listOf("first"), values)
+        assertEquals(1, hostFeedback)
         assertEquals(0, BeepBoundary.count, "existing constructors do not opt in")
         view.setFeedbackEnabled(true)
         view.setRunning(true)
@@ -45,12 +48,14 @@ class ScannerFeedbackTest {
         second.barcodeResult(result("second"))
         second.barcodeResult(result("duplicate"))
         assertEquals(listOf("first", "second"), values)
+        assertEquals(2, hostFeedback)
         assertEquals(1, BeepBoundary.count)
         view.release()
         view.setFeedbackEnabled(true)
         view.setRunning(true)
         second.barcodeResult(result("after-release"))
         assertEquals(1, BeepBoundary.count)
+        assertEquals(2, hostFeedback, "release clears the host feedback closure")
     }
 
     @Test fun pauseBlankFramesDisabledAndFeedbackFailurePreserveResultContract() {
@@ -68,6 +73,7 @@ class ScannerFeedbackTest {
         current.barcodeResult(result(""))
         assertEquals(0, BeepBoundary.count)
         BeepBoundary.fail = true
+        view.setFeedbackHandler { error("Host feedback unavailable") }
         current.barcodeResult(result("valid"))
         assertEquals(listOf("valid"), values, "feedback failure cannot discard recognized QR")
         assertEquals(1, BeepBoundary.count)

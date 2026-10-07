@@ -23,5 +23,10 @@ EXTRACT
 python3 scripts/check-maven.py "$staging/maven" com.github.gycrosskit.scanner "$VERSION" scanner-core,scanner-kuikly ios_arm64,ios_x64,ios_simulator_arm64,ohos_arm64
 # 标签必须解析为不可变发布提交；不把当前 PR 的 SHA 当成已发布版本。
 commit="$(git ls-remote https://github.com/gycrosskit/scanner.git "refs/tags/$VERSION" "refs/tags/$VERSION^{}" | awk '$2 ~ /\^\{\}$/ {peeled=$1} $2 !~ /\^\{\}$/ {direct=$1} END {print peeled ? peeled : direct}')"
+publications=scanner-core,scanner-core-android,scanner-core-iosarm64,scanner-core-iosx64,scanner-core-iossimulatorarm64,scanner-core-ohosarm64,scanner-kuikly,scanner-kuikly-ohosarm64
+case "$VERSION" in
+  0.1.2|0.1.3|0.1.4|0.1.5) ;; # 保持已发布标签的精确 inventory。
+  *) publications+=,scanner-kuikly-android,scanner-kuikly-iosarm64,scanner-kuikly-iosx64,scanner-kuikly-iossimulatorarm64 ;;
+esac
 python3 scripts/check-public-maven.py --repo scanner --version "$VERSION" --commit "$commit" \
-  --expected-publications scanner-core,scanner-core-android,scanner-core-iosarm64,scanner-core-iosx64,scanner-core-iossimulatorarm64,scanner-core-ohosarm64,scanner-kuikly,scanner-kuikly-ohosarm64 --output-dir "$staging/public"
+  --expected-publications "$publications" --output-dir "$staging/public"

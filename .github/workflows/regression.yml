@@ -48,7 +48,7 @@ jobs:
           java-version: '17'
           cache: gradle
       - run: test -f "$ANDROID_HOME/platforms/android-36/android.jar"
-      - run: bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :scanner-core:testDebugUnitTest :scanner-core:compileDebugKotlinAndroid --no-daemon --max-workers=1
+      - run: bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :scanner-core:testDebugUnitTest :scanner-core:compileDebugKotlinAndroid :scanner-kuikly:compileDebugKotlinAndroid --no-daemon --max-workers=1
       - run: |
           bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification-kuikly test --refresh-dependencies --info --no-daemon --max-workers=1
   native:
@@ -69,7 +69,7 @@ jobs:
             x86_64) native_target=IosX64; native_test=iosX64Test ;;
             *) echo "Unsupported macOS architecture" >&2; exit 1 ;;
           esac
-          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :scanner-core:compileKotlinIosArm64 :scanner-core:compileKotlin${native_target} :scanner-core:compileKotlinOhosArm64 :scanner-kuikly:compileKotlinOhosArm64 --no-daemon --max-workers=1
+          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :scanner-core:compileKotlinIosArm64 :scanner-core:compileKotlin${native_target} :scanner-core:compileKotlinOhosArm64 :scanner-kuikly:compileKotlinIosArm64 :scanner-kuikly:compileKotlin${native_target} :scanner-kuikly:compileKotlinOhosArm64 --no-daemon --max-workers=1
       - run: xcrun swiftc -typecheck -target "$(uname -m)-apple-ios15.0-simulator" -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" iosApp/Sources/GycScannerNative/*.swift
   release-android:
     if: github.event_name == 'pull_request' || github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')
@@ -88,7 +88,10 @@ jobs:
           cache: gradle
       - run: test -f "$ANDROID_HOME/platforms/android-36/android.jar"
       - run: bash scripts/ci-release.sh
-      - run: bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification compileDebugKotlinAndroid -PscannerVersion="$VERSION" --refresh-dependencies --no-daemon --max-workers=1
+      - run: |
+          unified_ui=true
+          case "$VERSION" in 0.1.2|0.1.3|0.1.4|0.1.5) unified_ui=false ;; esac
+          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification compileDebugKotlinAndroid -PscannerVersion="$VERSION" -PverifyUnifiedUi="$unified_ui" --refresh-dependencies --no-daemon --max-workers=1
   release-native:
     if: github.event_name == 'pull_request' || github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')
     runs-on: macos-15
@@ -111,4 +114,6 @@ jobs:
             x86_64) native_target=IosX64; native_test=iosX64Test ;;
             *) echo "Unsupported macOS architecture" >&2; exit 1 ;;
           esac
-          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification linkDebugFramework${native_target} compileKotlinOhosArm64 -PscannerVersion="$VERSION" --refresh-dependencies --no-daemon --max-workers=1
+          unified_ui=true
+          case "$VERSION" in 0.1.2|0.1.3|0.1.4|0.1.5) unified_ui=false ;; esac
+          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification linkDebugFramework${native_target} compileKotlinOhosArm64 -PscannerVersion="$VERSION" -PverifyUnifiedUi="$unified_ui" --refresh-dependencies --no-daemon --max-workers=1
