@@ -79,6 +79,7 @@ jobs:
             *) echo "Unsupported macOS architecture" >&2; exit 1 ;;
           esac
           bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :scanner-core:compileKotlinIosArm64 :scanner-core:compileKotlin${native_target} :scanner-core:compileKotlinOhosArm64 :scanner-kuikly:compileKotlinIosArm64 :scanner-kuikly:compileKotlin${native_target} :scanner-kuikly:compileKotlinOhosArm64 --no-daemon --max-workers=1 --stacktrace
+      - run: python3 tests/run-scanner-roi.py "$RUNNER_TEMP/scanner-roi-fixed"
       - run: xcrun swiftc -typecheck -target "$(uname -m)-apple-ios15.0-simulator" -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" iosApp/Sources/GycScannerNative/*.swift
   release-android:
     if: github.event_name == 'pull_request' || github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.version != '')
