@@ -1,10 +1,10 @@
 {
   "version": "0.1.7",
-  "state": "candidate, not committed/pushed/tagged/published",
+  "state": "PR18 candidate; original freeze preserved separately; CI-only fork DNS repair, no new tag/publication",
   "base_sha": "265c8a9ba0f544467756a21fb75304d04f1cf4c1",
   "branch": "codex/scanner-roi-unification-20261007",
   "worktree": "/Users/guoyang/gycrosskit/.worktrees/scanner-roi-unification-20261007",
-  "candidate_source_manifest_sha256": "3e3699ffe7f140ea0c09e5559a13feb52c7b4586d9fb5d0564a6060cd8f94684",
+  "candidate_source_manifest_sha256": "c6ef2a09e195934c6f6caf440eb53ab329ea357594a72f1bb4b1599e79b859de",
   "manifest_rule": "sha256 of sorted path + NUL + per-file SHA256 + newline; tracked and new review files, excluding this manifest itself",
   "maven": {
     "archive": "scanner-maven.tar.gz",
@@ -55,7 +55,7 @@
     ]
   },
   "files": {
-    ".github/workflows/regression.yml": "8d7b5d13671061fe75732e84bb6fcf7f184c3501eae66e74de9d90eb810eefe6",
+    ".github/workflows/regression.yml": "0bf50a6ff95446e033c7c9bf5d88a722de4295f7dad205150d9b0109bfeb0f01",
     ".gitignore": "421676fb7cb43820749898547edf88578194c930a3bdcfb4f4f0d2e9f858b851",
     "CHANGELOG.md": "79b07043b3257b2894601b46981f0a3e04853098677a3a70c9b7b686c99c2560",
     "LICENSE": "c69e86da3fc2081768d5839c99bf63ee397a308f78e6f61cd2babc530a36f9cc",
@@ -140,5 +140,12 @@
     "verification/src/iosMain/kotlin/IosProbe.kt": "550cd232b30a15d4cf892d5a94cd3a26a887508b8fbe5f6ffda66ac59f7dee85",
     "verification/src/ohosArm64Main/kotlin/OhosProbe.kt": "d9c00debda22e70183f74c946267491d0cf75488271abd747cdc543390f25803",
     "verification/嵌入式扫码候选验收.md": "ffb6d066cdc2d005b47f9221d5562f85891cc0bfe37fff40570de7260aebad09"
+  },
+  "ci_repair": {
+    "original_head": "bc04caac118b4433994e99c19effef6b837da078",
+    "old_manifest_sha256": "3e3699ffe7f140ea0c09e5559a13feb52c7b4586d9fb5d0564a6060cd8f94684",
+    "failed_job": 112811414706,
+    "cause": "exact release-native log: three maven.eazytec-cloud.com nodename errors then KMP plugin resolution failure; real Render BUILD SUCCEEDED",
+    "scope": "existing HTTPS-verified fork-host helper and 14 mocked trust cases in release-native only; add stacktrace; production and frozen archives unchanged"
   }
 }

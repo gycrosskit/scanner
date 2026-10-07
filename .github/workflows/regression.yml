@@ -117,6 +117,9 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: gradle
+      - run: |
+          python3 verification/ci/test_fork_host.py
+          bash scripts/ci-pin-fork-host.sh
       - run: bash scripts/ci-release.sh
       - run: |
           case "$(uname -m)" in
@@ -131,4 +134,4 @@ jobs:
             render_dir=$(bash scripts/ci-build-kuikly-render.sh "$RUNNER_TEMP/kuikly-ios-render")
             render_args=("-PkuiklyRenderFrameworkDir=$render_dir")
           fi
-          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification linkDebugFramework${native_target} compileKotlinOhosArm64 -PscannerVersion="$VERSION" -PverifyUnifiedUi="$unified_ui" "${render_args[@]}" --refresh-dependencies --no-daemon --max-workers=1
+          bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification linkDebugFramework${native_target} compileKotlinOhosArm64 -PscannerVersion="$VERSION" -PverifyUnifiedUi="$unified_ui" "${render_args[@]}" --refresh-dependencies --no-daemon --max-workers=1 --stacktrace
