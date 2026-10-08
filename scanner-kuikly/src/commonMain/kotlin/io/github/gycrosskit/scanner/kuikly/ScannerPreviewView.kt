@@ -28,10 +28,10 @@ class ScannerPreviewAttr : Attr() {
 
 /** 原生事件绑定，随 Kuikly View 生命周期释放。 */
 class ScannerPreviewEvent : Event() {
-    /** 绑定单次原始文本事件，空白/畸形事件忽略。@param handler 页面 Context 的结果消费者。 */
+    /** 绑定单次原始文本事件，空字符串/畸形事件忽略。@param handler 页面 Context 的结果消费者。 */
     fun onResult(handler: (String) -> Unit) {
         register("onResult") { payload ->
-            previewString(payload, "value")?.takeIf(String::isNotBlank)?.let(handler)
+            previewString(payload, "value")?.takeIf(String::isNotEmpty)?.let(handler)
         }
     }
     /** 绑定设备失败事件。@param handler 接收原生诊断文本，宿主负责用户文案。 */

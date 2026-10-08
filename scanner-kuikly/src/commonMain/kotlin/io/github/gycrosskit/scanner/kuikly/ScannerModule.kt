@@ -35,7 +35,7 @@ class ScannerModule : Module(), QrCodeDecoder {
     suspend fun scanCode(): String? {
         val result = await("scan", JSONObject()) ?: error("扫码宿主不可用")
         return when (result.optString("status")) {
-            "decoded" -> result.optString("value").takeIf { it.isNotBlank() }
+            "decoded" -> result.optString("value").takeIf { it.isNotEmpty() }
                 ?: error("系统未返回二维码")
             "cancelled" -> null
             else -> error("无法打开扫码，请稍后重试")
