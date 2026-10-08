@@ -57,7 +57,7 @@ Android/iOS 提供嵌入式预览；HarmonyOS 稳定版提供系统扫码页，0
 - HarmonyOS HAR 新增可直接注册的 `GycScannerPreviewView`，嵌入式 ScanKit Surface、进程唯一相机 owner、串行 init/start/stop/release 与帧代次由组件负责。旧 owner 成功 release 后新 View 才能 init；释放失败保留 owner 以便重试。
 - `scanner-kuikly` 新增 `ScannerPreviewView` / `ScannerPreviewAttr` / `ScannerPreviewEvent` 和 DSL `ScannerPreview`，宿主 Compose 只装配布局和业务 callback。
 
-[0.1.3 Release](https://github.com/gycrosskit/scanner/releases/tag/0.1.3) 提供固定 Maven/HAR 与 SHA256SUMS；JitPack 状态 `ok`，独立远程 Android/OHOS consumer 编译和 iOS Simulator Framework 最终链接通过。Release 下载 HAR 的 API 22 独立 consumer 编译通过；OHPM `next` 已接受审核，但精确版本查询与安装仍为 `NOTFOUND`，不能当作 Registry 可安装。历史验收保持对应版本，下面 Maven 安装示例为已发布的 `0.1.6` prerelease；独立原生渠道见兼容矩阵。
+[0.1.3 Release](https://github.com/gycrosskit/scanner/releases/tag/0.1.3) 提供固定 Maven/HAR 与 SHA256SUMS；JitPack 状态 `ok`，独立远程 Android/OHOS consumer 编译和 iOS Simulator Framework 最终链接通过。Release 下载 HAR 的 API 22 独立 consumer 编译通过；OHPM `next` 已接受审核，但精确版本查询与安装仍为 `NOTFOUND`，不能当作 Registry 可安装。历史验收保持对应版本，当前安装版本见本页前部；独立原生渠道见兼容矩阵。
 
 0.1.2 JitPack 因旧 Python 运行器解析失败；其标签和资产保留，使用修正安装入口的 0.1.3。真实声音/振动、Surface/ScanKit 与前后台仍需设备验收。完整接线见[接入指南](docs/接入指南.md#嵌入式预览与反馈)。
 
@@ -154,7 +154,7 @@ ohosArm64Main.dependencies {
 }
 ```
 
-iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/scanner.git`，选择精确版本 `0.1.6`，产品 `GycScannerNative`。
+iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/scanner.git`，选择精确版本 `0.1.8`，产品 `GycScannerNative`。
 
 HarmonyOS 原生包独立安装：
 
