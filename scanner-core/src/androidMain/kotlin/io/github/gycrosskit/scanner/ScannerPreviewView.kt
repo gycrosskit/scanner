@@ -10,6 +10,7 @@ import com.journeyapps.barcodescanner.BarcodeView
 import com.journeyapps.barcodescanner.CameraPreview
 import com.journeyapps.barcodescanner.DefaultDecoderFactory
 import com.journeyapps.barcodescanner.Size
+import kotlin.math.roundToInt
 
 /**
  * 主线程创建和操作；宿主先申请 CAMERA 权限，在 onPause/离开组合时暂停，在销毁时 release。
@@ -23,6 +24,8 @@ class ScannerPreviewView(
     private var onResult: ((String) -> Unit)?,
 ) : FrameLayout(context) {
     private val camera = BarcodeView(context).apply {
+        val defaultFramePixels = (260 * resources.displayMetrics.density).roundToInt().coerceAtLeast(1)
+        framingRectSize = Size(defaultFramePixels, defaultFramePixels)
         decoderFactory = DefaultDecoderFactory(listOf(BarcodeFormat.QR_CODE))
     }
     private var running = false

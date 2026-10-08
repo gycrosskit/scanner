@@ -37,6 +37,8 @@ class AndroidQrCodeDecoderTest {
             val encoded = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, encoded)
             assertEquals(expected, AndroidQrCodeDecoder.decode(encoded.toByteArray()))
+            assertNull(AndroidQrCodeDecoder.decode(encoded.toByteArray().copyOf(MAX_QR_IMAGE_BYTES + 1)),
+                "oversized valid QR must be rejected before platform decoding")
         } finally {
             bitmap.recycle()
         }

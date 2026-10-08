@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 /** Android 相册二维码解码器；在 Default dispatcher 解码，长边采样至最多 2048 px，不持有 UI renderer。 */
 object AndroidQrCodeDecoder : QrCodeDecoder {
     override suspend fun decode(bytes: ByteArray): String? = withContext(Dispatchers.Default) {
-        if (bytes.isEmpty()) return@withContext null
+        if (bytes.isEmpty() || bytes.size > MAX_QR_IMAGE_BYTES) return@withContext null
         runCatching {
             val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
             BitmapFactory.decodeByteArray(bytes, 0, bytes.size, bounds)

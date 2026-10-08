@@ -1,10 +1,20 @@
 # GY CrossKit Scanner
 
-当前已发布 Maven / Swift Package 为 `0.1.6` prerelease，HAR 保持 `0.1.3`。当前源码为 [0.1.7 iOS ROI 修复候选](docs/0.1.7-iOS-ROI候选.md)，尚未发布；不覆盖旧标签或归档。
+## 当前功能与平台边界
+
+core 提供图片 QR 解码及 Android 原生预览，Swift 提供 CoreImage/AVFoundation；scanner-kuikly 确有三端 ScannerPreviewHost UI入口，系统扫码页仅 OHOS。
+
+适用版本：Maven / Swift Package 0.1.8；HAR 0.1.4。本次修复与平台边界见[功能与平台差异](docs/功能与平台差异.md)，构建与渠道验收见[版本发布记录](https://github.com/gycrosskit/scanner/releases/tag/0.1.8)；下方旧版本记录保留其历史范围。
+
+当前测试覆盖、执行时点和未验收项集中见[验证范围](docs/功能与平台差异.md#验证范围)，复现命令见[开发与验证](docs/开发与验证.md)。
+
+此版本 Maven / Swift Package 为 `0.1.8`，配套 HAR `0.1.4`，补齐鸿蒙预览 ROI：结果坐标沿 ViewControl 输入单位，不重复 px2vp；与 iOS 一致接受正面积相交，缺少位置或无效矩形继续扫描。HAR `0.1.4` 包含此改动。
+
+历史 `0.1.6` prerelease 与 [0.1.7 iOS ROI 修复候选记录](docs/0.1.7-iOS-ROI候选.md) 保留其验收时点；此版本在 `0.1.7` 源码基线上包含 OHOS ROI、32 MiB 输入边界和预览默认260修复，不覆盖旧标签或归档。
 
 0.1.6 新增 Kuikly Compose `ScannerPreviewHost`（Android/iOS/OHOS）和共用反馈入口，见[跨端行为说明](docs/跨端行为候选.md)。公开制品、新 Host 独立编译与真实 iOS Render 最终链接已通过；相机和视觉一致性仍须宿主及设备验收。
 
-[本轮完整源码审查](docs/完整源码审查.md) 列出全部生产文件、公开调用链、实际验证与未测项。
+[历史完整源码审查](docs/完整源码审查.md) 列出全部生产文件、公开调用链、实际验证与未测项。
 
 二维码图片解码、Android/iOS 原生相机预览和 HarmonyOS ScanKit 系统扫码。返回原始文本；业务格式校验、扫码框、提示、导航和图片选择由宿主负责。
 
@@ -149,7 +159,7 @@ iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/sca
 HarmonyOS 原生包独立安装：
 
 ```sh
-ohpm install @gycrosskit/scanner-native@0.1.3
+ohpm install @gycrosskit/scanner-native@0.1.4
 ```
 
 2026-10-07 官方公共 Registry metadata 已包含精确版本 `0.1.3`（当前预览 UI 所需 HAR）；全新 cache 的精确 Registry 下载/安装仍在独立验证中。历史验收中 NOTFOUND 是对应时间的记录。
@@ -202,3 +212,5 @@ Apache-2.0，见 [LICENSE](LICENSE)。
 OHOS KLIB 编译不代表 HAR 构建、ohpm 上架或真机验收。当前没有已确认可用的 DevEco/Hvigor runner，这些检查尚未自动化，不能作为 CI 通过范围。
 
 PR 的发布回归固定验证已发布 `0.1.6` 基线，五个 job 都通过后才合并；Release 事件使用其精确标签。基线证明远程产物可消费，不代表 PR 新源码已发布。
+
+此版本统一图片解码输入最大 32 MiB（超限为 null/原生 invalid_content），原生预览默认识别区为 260 dp/points/vp；宿主显式 frame 参数仍优先。

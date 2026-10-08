@@ -1,5 +1,7 @@
 # @gycrosskit/scanner-native
 
+2026-10-08 当前源码与三端/五入口边界见[功能与平台差异](../../docs/功能与平台差异.md)；本包只承担上文所述原生能力，以下版本和渠道记录按各自日期阅读。
+
 HarmonyOS ScanKit 系统二维码扫码和图片解码。当前 HAR target/compatible SDK 为 HarmonyOS API 22。
 
 ```sh
@@ -21,6 +23,6 @@ context 为 UIAbilityContext，图片解码使用 decode(ArrayBuffer)。需要�
 Apache-2.0，见 [LICENSE](LICENSE)。
 
 
-当前源码待发布新增 `GycScannerPreviewView`（Kuikly Renderer 注册名相同），提供 Surface 预览、running、
+已有 `GycScannerPreviewView`，当前未发布候选调整ROI与结果归属；该View（Kuikly Renderer 注册名相同），提供 Surface 预览、running、
 scanFrameSize(vp)、onResult/onFailure；取景框和权限 UI 留宿主。旧相机成功释放后才转移唯一 owner。
 Kotlin View 和生命周期示例见仓库 docs/接入指南.md，历史 0.1.1 发布物不包含新 API。

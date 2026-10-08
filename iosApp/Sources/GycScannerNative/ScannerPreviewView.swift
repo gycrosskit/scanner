@@ -18,10 +18,10 @@ public final class ScannerPreviewView: UIView, AVCaptureMetadataOutputObjectsDel
 
     /// 创建相机预览，不主动申请权限；错误与结果交付到主线程。
     /// - Parameters:
-    ///   - scanFrameSize: 正方形识别区边长，points，默认 240；宿主传正且有限的值。
+    ///   - scanFrameSize: 正方形识别区边长，points，默认 260；宿主传正且有限的值。
     ///   - onResult: 单次二维码原始文本，结果后停止扫描。
     ///   - onFailure: 设备/权限失败诊断码，由宿主映射用户文案。
-    public init(scanFrameSize: CGFloat = 240, onResult: @escaping (String) -> Void,
+    public init(scanFrameSize: CGFloat = 260, onResult: @escaping (String) -> Void,
                 onFailure: @escaping (String) -> Void) {
         precondition(scanFrameSize > 0 && scanFrameSize.isFinite)
         self.scanFrameSize = scanFrameSize

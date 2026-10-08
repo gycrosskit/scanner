@@ -18,6 +18,7 @@ import org.robolectric.annotation.Implementation
 import org.robolectric.annotation.Implements
 import org.robolectric.shadows.ShadowViewGroup
 import kotlin.test.assertEquals
+import kotlin.math.roundToInt
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28], shadows = [BarcodeViewBoundary::class, CameraPreviewBoundary::class, BeepBoundary::class])
@@ -32,6 +33,10 @@ class ScannerFeedbackTest {
         val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
         val values = mutableListOf<String>()
         val view = ScannerPreviewView(activity, onResult = values::add)
+        val camera = view.getChildAt(0) as BarcodeView
+        val expectedSize = (260 * activity.resources.displayMetrics.density).roundToInt()
+        assertEquals(expectedSize, camera.framingRectSize.width)
+        assertEquals(expectedSize, camera.framingRectSize.height)
         var hostFeedback = 0
         view.setFeedbackHandler { hostFeedback++ }
         view.setRunning(true)
