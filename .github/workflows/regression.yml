@@ -19,6 +19,7 @@ permissions:
   contents: read
 # JVM 启动前设置；Gradle init 时 DNS 策略可能已初始化，不能在那时才改。
 env:
+  CI_FORK_HOST_FALLBACK_IP: ${{ vars.CI_FORK_HOST_FALLBACK_IP }}
   JAVA_TOOL_OPTIONS: -Djava.security.properties=${{ github.workspace }}/scripts/ci-java.security
 concurrency:
   group: regression-${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
@@ -106,6 +107,7 @@ jobs:
       - if: needs.changes.outputs.source == 'true'
         timeout-minutes: 10
         run: |
+          python3 scripts/ci-run.py --log ci-diagnostics/fork-host-fixture.log -- python3 verification/ci/test_fork_host.py
           python3 scripts/ci-run.py --log ci-diagnostics/contracts-1.log -- python3 scripts/test-check-maven.py
           python3 scripts/ci-run.py --log ci-diagnostics/contracts-2.log -- python3 scripts/test-jitpack-metadata.py
           TYPESCRIPT_PATH="$RUNNER_TEMP/ci-tools/node_modules/typescript" python3 scripts/ci-run.py --log ci-diagnostics/contracts-3.log -- node --test tests/scanner.cjs tests/scanner-preview.cjs
@@ -268,6 +270,8 @@ jobs:
           java-version: '17'
           cache: gradle
       - run: test -f "$ANDROID_HOME/platforms/android-36/android.jar"
+        timeout-minutes: 5
+      - run: bash scripts/ci-pin-fork-host.sh
         timeout-minutes: 5
       - timeout-minutes: 40
         run: |
