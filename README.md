@@ -8,38 +8,13 @@ core 提供图片 QR 解码及 Android 原生预览，Swift 提供 CoreImage/AVF
 
 当前测试覆盖、执行时点和未验收项集中见[验证范围](docs/功能与平台差异.md#验证范围)，复现命令见[开发与验证](docs/开发与验证.md)。
 
-此版本 Maven / Swift Package 为 `0.1.8`，配套 HAR `0.1.4`，补齐鸿蒙预览 ROI：结果坐标沿 ViewControl 输入单位，不重复 px2vp；与 iOS 一致接受正面积相交，缺少位置或无效矩形继续扫描。HAR `0.1.4` 包含此改动。
+当前鸿蒙预览 ROI 的结果坐标沿 ViewControl 输入单位，不重复 px2vp；与 iOS 一致接受正面积相交，缺少位置或无效矩形继续扫描。配套 HAR `0.1.4` 包含此能力。
 
-历史 `0.1.6` prerelease 与 [0.1.7 iOS ROI 修复候选记录](docs/0.1.7-iOS-ROI候选.md) 保留其验收时点；此版本在 `0.1.7` 源码基线上包含 OHOS ROI、32 MiB 输入边界和预览默认260修复，不覆盖旧标签或归档。
-
-0.1.6 新增 Kuikly Compose `ScannerPreviewHost`（Android/iOS/OHOS）和共用反馈入口，见[跨端行为说明](docs/跨端行为候选.md)。公开制品、新 Host 独立编译与真实 iOS Render 最终链接已通过；相机和视觉一致性仍须宿主及设备验收。
+Kuikly Compose `ScannerPreviewHost`（Android/iOS/OHOS）提供共用反馈入口；当前包含 32 MiB 输入边界和默认 260 识别框。相机和视觉一致性仍须宿主及设备验收；历史发布与 ROI 候选记录见下方导航。
 
 [历史完整源码审查](docs/完整源码审查.md) 列出全部生产文件、公开调用链、实际验证与未测项。
 
 二维码图片解码、Android/iOS 原生相机预览和 HarmonyOS ScanKit 系统扫码。返回原始文本；业务格式校验、扫码框、提示、导航和图片选择由宿主负责。
-
-## 0.1.5 prerelease
-
-Kuikly 图片解码和系统扫码等待被后台取消时，回调清理派回调用时的页面 dispatcher，并避免注册期间取消导致重复注销。调用和销毁仍要求所属页面 Kuikly Context。
-
-| 渠道 | 当前版本 | 状态 |
-| --- | --- | --- |
-| Maven core/Kuikly | 0.1.5 | prerelease 已发布，JitPack 制品审计通过；独立消费结果见验收文档 |
-| HarmonyOS HAR | 0.1.3 | 原生源码未变，保持既有版本 |
-| Swift Package GycScannerNative | 0.1.1 | 原生源码未变，保持既有精确版本 |
-
-[0.1.5 Release](https://github.com/gycrosskit/scanner/releases/tag/0.1.5) 已提供固定 Maven 归档与 SHA256SUMS；JitPack 最终状态、精确 commit 和制品审计通过。源码回归、远程渠道限制及独立消费进度见 [0.1.5 远程发布验收](docs/0.1.5远程发布验收.md)，不代表生产宿主或真实设备验收通过。
-
-## 0.1.4 prerelease
-
-修复 Kuikly scan/decode 回调已完成但协程尚未消费时页面销毁的迟交付，保留请求归属和 native cancel。新 POM 补齐 Apache-2.0 元数据。
-
-| 渠道 | 本轮版本 | 状态 |
-| --- | --- | --- |
-| Maven core/Kuikly | 0.1.4 | JitPack 全文件/hash 与 Android/OHOS/三 iOS 编译、Simulator 链接通过 |
-| HarmonyOS HAR | 0.1.3 | 原生源码未变，沿用旧 Release 已验产物 |
-| Swift Package GycScannerNative | 0.1.1 | 原生源码未变，保持既有精确消费版本 |
-
 
 ## 平台与要求
 
@@ -49,21 +24,11 @@ Kuikly 图片解码和系统扫码等待被后台取消时，回调清理派回�
 | iOS | KMP 解码 bridge，或 Swift Package `GycScannerNative` | iOS 15+，Swift tools 5.9 |
 | HarmonyOS | 原生 HAR，或 `scanner-kuikly` + HAR | 当前 HAR 的 target/compatible SDK 均为 API 22；需要设备提供 ScanKit |
 
-Android/iOS 提供嵌入式预览；HarmonyOS 稳定版提供系统扫码页，0.1.3 候选另提供嵌入式预览。纯 OpenHarmony 设备不保证有 ScanKit，失败返回 `failed`。KMP 使用 Kotlin `2.2.21-1.0.0`，Kuikly 使用 `2.28.0-2.0.21-ohos`；OHOS 工具链配置见接入指南。
-
-## 0.1.3 prerelease
-
-- Android 既有 `ScannerPreviewView` 新增 `setFeedbackEnabled(enabled, vibrateEnabled = false)`；默认行为不变，宿主显式开启后由组件在一次有效结果上播放 ZXing 声音/可选振动。权限、状态栏样式和业务结果仍归宿主。
-- HarmonyOS HAR 新增可直接注册的 `GycScannerPreviewView`，嵌入式 ScanKit Surface、进程唯一相机 owner、串行 init/start/stop/release 与帧代次由组件负责。旧 owner 成功 release 后新 View 才能 init；释放失败保留 owner 以便重试。
-- `scanner-kuikly` 新增 `ScannerPreviewView` / `ScannerPreviewAttr` / `ScannerPreviewEvent` 和 DSL `ScannerPreview`，宿主 Compose 只装配布局和业务 callback。
-
-[0.1.3 Release](https://github.com/gycrosskit/scanner/releases/tag/0.1.3) 提供固定 Maven/HAR 与 SHA256SUMS；JitPack 状态 `ok`，独立远程 Android/OHOS consumer 编译和 iOS Simulator Framework 最终链接通过。Release 下载 HAR 的 API 22 独立 consumer 编译通过；OHPM `next` 已接受审核，但精确版本查询与安装仍为 `NOTFOUND`，不能当作 Registry 可安装。历史验收保持对应版本，当前安装版本见本页前部；独立原生渠道见兼容矩阵。
-
-0.1.2 JitPack 因旧 Python 运行器解析失败；其标签和资产保留，使用修正安装入口的 0.1.3。真实声音/振动、Surface/ScanKit 与前后台仍需设备验收。完整接线见[接入指南](docs/接入指南.md#嵌入式预览与反馈)。
+Android/iOS/HarmonyOS 提供嵌入式预览；HarmonyOS 另提供系统扫码页。纯 OpenHarmony 设备不保证有 ScanKit，失败返回 `failed`。KMP 使用 Kotlin `2.2.21-1.0.0`，Kuikly 使用 `2.28.0-2.0.21-ohos`；OHOS 工具链配置见接入指南。
 
 ## 架构与调用流程
 
-图片解码与相机预览是两个入口。`scanner-core` 提供 KMP 解码契约；iOS 由宿主接线 Swift bridge，HarmonyOS Kuikly 通过 HAR 调用 ScanKit。嵌入式预览按上方版本边界接入。
+图片解码与相机预览是两个入口。`scanner-core` 提供 KMP 解码契约；iOS 由宿主接线 Swift bridge，HarmonyOS Kuikly 通过 HAR 调用 ScanKit。嵌入式预览按顶部当前功能合同和接入指南接线。
 
 ```mermaid
 flowchart TB
@@ -203,7 +168,14 @@ HarmonyOS 同实例只允许一个系统扫码请求；销毁时 `dispose()` 取
 
 Apache-2.0，见 [LICENSE](LICENSE)。
 
-本轮状态见 [0.1.5 远程发布验收](docs/0.1.5远程发布验收.md)；既有制品与远程记录见 [0.1.4 发布验收](docs/发布验收-0.1.4.md)。
+## 历史发布记录
+
+以下记录保留对应版本、渠道与验收时点，不替代顶部当前功能和安装基线。
+
+- [0.1.7 iOS ROI 候选记录](docs/0.1.7-iOS-ROI候选.md)、[0.1.6 跨端行为与后续发布记录](docs/跨端行为候选.md)。
+- <a id="015-prerelease"></a>[0.1.5 远程发布验收](docs/0.1.5远程发布验收.md)。
+- <a id="014-prerelease"></a>[0.1.4 发布验收](docs/发布验收-0.1.4.md)。
+- <a id="013-prerelease"></a>[0.1.2 安装失败与 0.1.3 嵌入式预览/API/远程验收](verification/嵌入式扫码候选验收.md)。
 
 ## 自动回归
 
