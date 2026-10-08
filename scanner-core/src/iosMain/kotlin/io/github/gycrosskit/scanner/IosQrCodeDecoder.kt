@@ -14,7 +14,7 @@ fun interface IosQrCodeBridge {
 /** 将非空图片复制为 NSData 并调用 Swift 桥，不自动切换线程。@param bridge 宿主的 CoreImage 解码桥。 */
 class IosQrCodeDecoder(private val bridge: IosQrCodeBridge) : QrCodeDecoder {
     override suspend fun decode(bytes: ByteArray): String? {
-        if (bytes.isEmpty()) return null
+        if (bytes.isEmpty() || bytes.size > MAX_QR_IMAGE_BYTES) return null
         return bytes.usePinned { bridge.decode(NSData.create(bytes = it.addressOf(0), length = bytes.size.toULong())) }
     }
 }

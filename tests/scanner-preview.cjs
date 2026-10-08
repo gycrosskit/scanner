@@ -4,11 +4,14 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const ts = require(process.env.TYPESCRIPT_PATH || '/Applications/DevEco-Studio.app/Contents/tools/ohpm/node_modules/typescript');
 const source = fs.readFileSync(__dirname + '/../ohos/scanner-native/src/main/ets/GycScannerPreviewView.ets', 'utf8').split('\n@Component')[0];
+function qr(value, rect = { left: 190, right: 210, top: 290, bottom: 310 }) {
+  return { originalValue: value, scanCodeRect: rect };
+}
 function environment() {
   const calls = [], callbacks = [];
   const sdk = { calls, callbacks,
     init(options) { calls.push(['init', options]); if (sdk.initFailure) throw { code: 1 }; },
-    start(control, callback) { calls.push(['start', control]); callbacks.push(callback); if (sdk.syncResult) callback(null, [{ originalValue: sdk.syncResult }]); if (sdk.startFailure) throw { code: 2 }; },
+    start(control, callback) { calls.push(['start', control]); callbacks.push(callback); if (sdk.syncResult) callback(null, [qr(sdk.syncResult)]); if (sdk.startFailure) throw { code: 2 }; },
     rescan() { calls.push(['rescan']); if (sdk.rescanFailure) throw { code: 3 }; },
     async stop() { calls.push(['stop']); if (sdk.stopDeferred) await sdk.stopDeferred; if (sdk.stopFailure) throw { code: 4 }; },
     async release() { calls.push(['release']); if (sdk.releaseFailure) throw { code: 5 }; }
@@ -35,15 +38,24 @@ function create(View) {
     assert.equal(View.VIEW_NAME, 'GycScannerPreviewView'); assert.deepEqual(sdk.calls.map(x => x[0]), ['init', 'start']);
     assert.equal(sdk.calls[1][1].width, 400, 'ViewControl dimensions stay in vp');
     const frame = sdk.callbacks[0];
+    assert.equal(view.inFrame(qr('inside')), true, 'result uses ViewControl vp, never a second density conversion');
+    assert.equal(view.inFrame(qr('partial', { left: 40, right: 80, top: 290, bottom: 310 })), true, 'positive overlap matches iOS even when center is outside');
+    for (const rect of [undefined, { left: 0, right: 70, top: 290, bottom: 310 },
+      { left: 390, right: 410, top: 590, bottom: 610 },
+      { left: 200, right: 200, top: 290, bottom: 310 },
+      { left: 210, right: 190, top: 290, bottom: 310 },
+      { left: NaN, right: 210, top: 290, bottom: 310 }]) {
+      assert.equal(view.inFrame({ originalValue: 'invalid', scanCodeRect: rect }), false, 'unknown, edge-only, outside or invalid bounds cannot prove ROI');
+    }
     frame(null, []); frame(null, [{ originalValue: 'outside', scanCodeRect: { left: 0, right: 10, top: 0, bottom: 10 } }]);
     assert.equal(sdk.calls.filter(x => x[0] === 'rescan').length, 2);
-    frame(null, [{ originalValue: 'inside', scanCodeRect: { left: 390, right: 410, top: 590, bottom: 610 } }]);
-    frame(null, [{ originalValue: 'duplicate' }]); await flush();
+    frame(null, [qr('inside')]);
+    frame(null, [qr('duplicate')]); await flush();
     assert.deepEqual(results, ['inside']); assert.deepEqual(sdk.calls.slice(-2).map(x => x[0]), ['stop', 'release']);
     view.setProp('running', true); await flush(); const next = sdk.callbacks.at(-1);
-    frame(null, [{ originalValue: 'old-generation' }]); assert.equal(results.length, 1);
-    view.setProp('running', false); next(null, [{ originalValue: 'late-album-frame' }]); await flush(); assert.equal(results.length, 1);
-    view.setProp('running', true); await flush(); const destroyed = sdk.callbacks.at(-1); view.onDestroy(); destroyed(null, [{ originalValue: 'late-destroy' }]); await flush();
+    frame(null, [qr('old-generation')]); assert.equal(results.length, 1);
+    view.setProp('running', false); next(null, [qr('late-album-frame')]); await flush(); assert.equal(results.length, 1);
+    view.setProp('running', true); await flush(); const destroyed = sdk.callbacks.at(-1); view.onDestroy(); destroyed(null, [qr('late-destroy')]); await flush();
     assert.equal(results.length, 1); assert.equal(sdk.calls.at(-1)[0], 'release');
   }
   {
@@ -55,7 +67,7 @@ function create(View) {
     let finishStop; sdk.stopDeferred = new Promise(resolve => { finishStop = resolve; });
     const second = create(View); await new Promise(resolve => setImmediate(resolve));
     assert.equal(sdk.calls.filter(x => x[0] === 'init').length, 1, 'new View must wait for old stop');
-    oldFrame(null, [{ originalValue: 'old-owner' }]);
+    oldFrame(null, [qr('old-owner')]);
     assert.deepEqual(first.results, [], 'old frames during asynchronous stop cannot reach replaced View');
     // owner is old until release, but old generation/running invalidation must prevent delivery during transfer.
     second.view.onDestroy(); finishStop(); sdk.stopDeferred = null; await flush();
@@ -66,9 +78,9 @@ function create(View) {
     const { sdk, View } = environment(); const first = create(View); await flush();
     const old = sdk.callbacks[0], second = create(View); await flush();
     assert.deepEqual(sdk.calls.map(x => x[0]), ['init', 'start', 'stop', 'release', 'init', 'start']);
-    const beforeDestroy = sdk.calls.length; first.view.onDestroy(); old(null, [{ originalValue: 'old-after-transfer' }]); await flush();
+    const beforeDestroy = sdk.calls.length; first.view.onDestroy(); old(null, [qr('old-after-transfer')]); await flush();
     assert.equal(sdk.calls.length, beforeDestroy, 'old View destroy cannot stop new owner'); assert.equal(first.results.length, 0);
-    sdk.callbacks.at(-1)(null, [{ originalValue: 'new-owner' }]); await flush(); assert.deepEqual(second.results, ['new-owner']);
+    sdk.callbacks.at(-1)(null, [qr('new-owner')]); await flush(); assert.deepEqual(second.results, ['new-owner']);
     second.view.onDestroy(); await flush();
   }
   {
@@ -90,7 +102,7 @@ function create(View) {
   }
   {
     const { sdk, View } = environment(), { view, results, failures } = create(View); await flush();
-    view.surfaceDestroyed(); sdk.callbacks[0](null, [{ originalValue: 'late-surface' }]); await flush(); assert.equal(results.length, 0);
+    view.surfaceDestroyed(); sdk.callbacks[0](null, [qr('late-surface')]); await flush(); assert.equal(results.length, 0);
     view.surfaceLoaded(); await flush(); sdk.callbacks.at(-1)({ code: 201 }, []); await flush(); assert.equal(failures.length, 1);
     view.onDestroy(); await flush();
   }

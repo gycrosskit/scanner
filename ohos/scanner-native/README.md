@@ -1,9 +1,11 @@
 # @gycrosskit/scanner-native
 
+适用版本：HAR `0.1.4`，配套 Maven `0.1.8`。完整功能与五入口限制见[功能与平台差异](https://github.com/gycrosskit/scanner/blob/0.1.8/docs/功能与平台差异.md)；构建、固定 Release HAR 消费与 OHPM Registry 可安装性分别见[此版发布记录](https://github.com/gycrosskit/scanner/releases/tag/0.1.8)。
+
 HarmonyOS ScanKit 系统二维码扫码和图片解码。当前 HAR target/compatible SDK 为 HarmonyOS API 22。
 
 ```sh
-ohpm install @gycrosskit/scanner-native@0.1.1
+ohpm install @gycrosskit/scanner-native@0.1.4
 ```
 
 ```typescript
@@ -21,6 +23,6 @@ context 为 UIAbilityContext，图片解码使用 decode(ArrayBuffer)。需要�
 Apache-2.0，见 [LICENSE](LICENSE)。
 
 
-当前源码待发布新增 `GycScannerPreviewView`（Kuikly Renderer 注册名相同），提供 Surface 预览、running、
+已有 `GycScannerPreviewView`，此版调整 ROI 与结果归属；该View（Kuikly Renderer 注册名相同），提供 Surface 预览、running、
 scanFrameSize(vp)、onResult/onFailure；取景框和权限 UI 留宿主。旧相机成功释放后才转移唯一 owner。
-Kotlin View 和生命周期示例见仓库 docs/接入指南.md，历史 0.1.1 发布物不包含新 API。
+Kotlin View 和生命周期示例见[接入指南](https://github.com/gycrosskit/scanner/blob/0.1.8/docs/接入指南.md)，历史 0.1.1 发布物不包含新 API。

@@ -4,9 +4,10 @@ import CoreImage
 /// 原始二维码图片解码入口；调用线程执行，不包含相机 UI 或业务格式校验。
 public enum QrCodeDecoder {
     /// 返回首个非空二维码文本；无效图片/无二维码返回 nil。
-    /// - Parameter data: 完整图片文件数据。
+    /// - Parameter data: 完整图片文件数据，最大 32 MiB；空/超限返回 nil。
     public static func decode(data: Data) -> String? {
-        guard let image = CIImage(data: data),
+        guard !data.isEmpty, data.count <= 32 * 1024 * 1024,
+              let image = CIImage(data: data),
               let detector = CIDetector(
                 ofType: CIDetectorTypeQRCode,
                 context: nil,

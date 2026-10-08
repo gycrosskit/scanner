@@ -89,7 +89,7 @@ export class GycScannerPreviewView extends KuiklyRenderBaseView {
       try {
         customScan.init({ scanTypes: [scanCore.ScanType.QR_CODE], enableMultiMode: false, enableAlbum: false });
         this.initialized = true;
-        // ViewControl 的 number 默认单位为 vp，与 XComponent 布局保持一致；码图矩形另按 px 转换。
+        // ScanKit 自定义预览的结果坐标与 ViewControl 输入同单位，此处均为 vp。
         const control: customScan.ViewControl = {
           surfaceId: this.surfaceId, width: this.width, height: this.height,
         };
@@ -120,13 +120,12 @@ export class GycScannerPreviewView extends KuiklyRenderBaseView {
 
   private inFrame(result: scanBarcode.ScanResult): boolean {
     const rect = result.scanCodeRect;
-    if (!rect) return true;
+    if (!rect || ![rect.left, rect.top, rect.right, rect.bottom].every(Number.isFinite) ||
+      rect.right <= rect.left || rect.bottom <= rect.top) return false;
     const side = Math.min(this.frameSize, this.width, this.height);
-    const uiContext = this.getUIContext() as UIContext;
-    const x = uiContext.px2vp((rect.left + rect.right) / 2);
-    const y = uiContext.px2vp((rect.top + rect.bottom) / 2);
-    return x >= (this.width - side) / 2 && x <= (this.width + side) / 2 &&
-      y >= (this.height - side) / 2 && y <= (this.height + side) / 2;
+    // 与 AVFoundation ROI 一致：正面积相交即可，框外或缺少位置证据继续扫描。
+    return rect.right > (this.width - side) / 2 && rect.left < (this.width + side) / 2 &&
+      rect.bottom > (this.height - side) / 2 && rect.top < (this.height + side) / 2;
   }
 
   private failed(generation: number, code: number): void {

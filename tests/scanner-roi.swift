@@ -69,7 +69,7 @@ extension ScannerPreviewView {
         verify("pause_rejects", expected: 0) { view in view.setRunning(false); view.deliverFixture([code(inside, timestamp)]) }
         verify("release_rejects", expected: 0) { view in view.releaseCamera(); view.deliverFixture([code(inside, timestamp)]) }
         verify("resize_invalidates_before_layout", expected: 0) { view in view.setScanFrameSize(180); view.deliverFixture([code(inside, timestamp)]) }
-        verify("unchanged_size_keeps_roi", expected: 1) { view in view.setScanFrameSize(240); view.deliverFixture([code(inside, timestamp)]) }
+        verify("unchanged_size_keeps_roi", expected: 1) { view in view.setScanFrameSize(260); view.deliverFixture([code(inside, timestamp)]) }
         verify("foreign_output_rejects", expected: 0) { $0.deliverFixture([code(inside, timestamp)], foreign: true) }
         verify("skip_outside_then_accept_inside", expected: 1) { $0.deliverFixture([code(outside, timestamp, "outside"), code(inside, timestamp)]) }
         let passed = checks.allSatisfy { $0["pass"] as? Bool == true }

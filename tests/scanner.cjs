@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const ts = require(process.env.TYPESCRIPT_PATH || '/Applications/DevEco-Studio.app/Contents/tools/hvigor/hvigor/node_modules/typescript');
-let completeScan, scanFailure, decodeFailure, openGate, zeroWrite = false, removed = 0, writes = 0, closes = 0, decodes = 0;
+let completeScan, scanFailure, decodeFailure, openGate, zeroWrite = false, opened = 0, removed = 0, writes = 0, closes = 0, decodes = 0;
 const sdk = {
   '@kit.ArkTS': { util: { generateRandomUUID: () => 'test-id' } },
   '@kit.AbilityKit': {}, '@kit.BasicServicesKit': {},
@@ -14,7 +14,7 @@ const sdk = {
   },
   '@kit.CoreFileKit': {
     fileUri: { getUriFromPath: x => x },
-    fileIo: { OpenMode: { CREATE: 1, WRITE_ONLY: 2, TRUNC: 4 }, open: async () => { if (openGate) await openGate; return { fd: 1 }; },
+    fileIo: { OpenMode: { CREATE: 1, WRITE_ONLY: 2, TRUNC: 4 }, open: async () => { opened++; if (openGate) await openGate; return { fd: 1 }; },
       write: async (_fd, bytes) => { writes++; return zeroWrite ? 0 : Math.min(2, bytes.byteLength); },
       close: async () => { closes++; }, unlink: async () => { removed++; } }
   }
@@ -33,6 +33,10 @@ const { GycScanner } = mod.exports;
   scanFailure = { code: 201 }; assert.equal((await scanner.scan()).status, 'permission_denied');
   scanFailure = null;
   assert.equal((await scanner.decode(new ArrayBuffer(0))).status, 'invalid_content');
+  assert.equal((await scanner.decode(new ArrayBuffer(32 * 1024 * 1024 + 1))).status, 'invalid_content');
+  assert.equal(opened, 0, 'empty and oversized inputs must not open a temporary file');
+  assert.equal(decodes, 0, 'invalid input must not reach the SDK');
+  assert.equal(writes, 0, 'invalid input must not write data');
   assert.equal((await scanner.decode(new ArrayBuffer(5))).value, 'hello');
   assert.equal(writes, 3); assert.equal(removed, 1);
   decodeFailure = true; assert.equal((await scanner.decode(new ArrayBuffer(1))).status, 'failed');
@@ -59,5 +63,5 @@ const { GycScanner } = mod.exports;
   const late = scanner.scan(); scanner.dispose(); completeScan({ originalValue: 'late' });
   assert.equal((await late).status, 'cancelled');
   assert.equal((await scanner.scan()).status, 'cancelled');
-  console.log('scanner lifecycle, errors and temporary file cleanup: passed');
+  console.log('scanner lifecycle, errors, >32 MiB early rejection and temporary file cleanup: passed');
 })().catch(error => { console.error(error); process.exitCode = 1; });
