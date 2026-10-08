@@ -147,10 +147,10 @@ dependencyResolutionManagement {
 
 ```kotlin
 commonMain.dependencies {
-    implementation("com.github.gycrosskit.scanner:scanner-core:0.1.6")
+    implementation("com.github.gycrosskit.scanner:scanner-core:0.1.8")
 }
 ohosArm64Main.dependencies {
-    implementation("com.github.gycrosskit.scanner:scanner-kuikly:0.1.6")
+    implementation("com.github.gycrosskit.scanner:scanner-kuikly:0.1.8")
 }
 ```
 
@@ -162,7 +162,7 @@ HarmonyOS 原生包独立安装：
 ohpm install @gycrosskit/scanner-native@0.1.4
 ```
 
-2026-10-07 官方公共 Registry metadata 已包含精确版本 `0.1.3`（当前预览 UI 所需 HAR）；全新 cache 的精确 Registry 下载/安装仍在独立验证中。历史验收中 NOTFOUND 是对应时间的记录。
+2026-10-07 官方公共 Registry metadata 已包含精确版本 `0.1.3`（当时预览 UI 所需 HAR）；全新 cache 的精确 Registry 下载/安装仍在独立验证中。历史验收中 NOTFOUND 是对应时间的记录。
 
 ## 最小使用
 
