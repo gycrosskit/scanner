@@ -4,7 +4,7 @@
 
 core 提供图片 QR 解码及 Android 原生预览，Swift 提供 CoreImage/AVFoundation；scanner-kuikly 确有三端 ScannerPreviewHost UI入口，系统扫码页仅 OHOS。
 
-适用版本：Maven 0.1.9；Swift Package 0.1.8；HAR 0.1.4。此版本为发布候选，远程验收以固定 Release 结果为准。本次修复与平台边界见[功能与平台差异](docs/功能与平台差异.md)，构建与渠道验收见[版本发布记录](https://github.com/gycrosskit/scanner/releases/tag/0.1.9)；下方旧版本记录保留其历史范围。
+适用版本：Maven 0.1.9；Swift Package 0.1.8；HAR 0.1.4。远程验收以固定 Release 结果为准。本次修复与平台边界见[功能与平台差异](docs/功能与平台差异.md)，构建与渠道验收见[版本发布记录](https://github.com/gycrosskit/scanner/releases/tag/0.1.9)；下方旧版本记录保留其历史范围。
 
 当前测试覆盖、执行时点和未验收项集中见[验证范围](docs/功能与平台差异.md#验证范围)，复现命令见[开发与验证](docs/开发与验证.md)。
 
