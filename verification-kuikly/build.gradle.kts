@@ -4,10 +4,10 @@ java { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaV
 sourceSets.test {
     // 直接编译生产源码，Kuikly 传输替身仅在该独立测试工程存在。
     kotlin.srcDirs("../scanner-kuikly/src/commonMain/kotlin", "../scanner-core/src/commonMain/kotlin")
-    kotlin.exclude("**/ScannerPreviewView.kt")
     kotlin.exclude("**/ScannerPreviewHost.kt")
 }
 dependencies {
     testImplementation(kotlin("test-junit"))
+    testImplementation("org.json:json:20231013")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2-1.0.0")
 }

@@ -7,7 +7,7 @@ checksum="$(awk -v version="$VERSION" '$1 == version {print $2}' release-checksu
 staging="$(mktemp -d)"
 trap 'rm -rf "$staging"' EXIT
 archive="$staging/scanner-maven.tar.gz"
-curl -fsSL --retry 3 --connect-timeout 30 -o "$archive" "https://github.com/gycrosskit/scanner/releases/download/$VERSION/scanner-maven.tar.gz"
+curl -fsSL --retry 3 --connect-timeout 30 --max-time 300 -o "$archive" "https://github.com/gycrosskit/scanner/releases/download/$VERSION/scanner-maven.tar.gz"
 echo "$checksum  $archive" | shasum -a 256 -c -
 python3 - "$archive" "$staging/maven" <<'EXTRACT'
 import sys, tarfile
@@ -29,4 +29,4 @@ case "$VERSION" in
   *) publications+=,scanner-kuikly-android,scanner-kuikly-iosarm64,scanner-kuikly-iosx64,scanner-kuikly-iossimulatorarm64 ;;
 esac
 python3 scripts/check-public-maven.py --repo scanner --version "$VERSION" --commit "$commit" \
-  --expected-publications "$publications" --output-dir "$staging/public"
+  --expected-publications "$publications" --output-dir "${CI_DIAGNOSTICS_DIR:-ci-diagnostics}/public"

@@ -8,6 +8,14 @@ import kotlinx.coroutines.test.*
 import kotlin.test.*
 @OptIn(ExperimentalCoroutinesApi::class)
 class ScannerModuleLifecycleTest {
+    @Test fun `system scan preserves nonempty whitespace text`() = runTest {
+        val module = ScannerModule()
+        val result = async { module.scanCode() }
+        runCurrent()
+        module.response(JSONObject().apply { put("status", "decoded"); put("value", " ") })
+        assertEquals(" ", result.await())
+    }
+
     @Test fun `empty content skips bridge and cancelled decode cannot affect next request`() = runTest {
         val module = ScannerModule()
         assertNull(module.decode(byteArrayOf()))

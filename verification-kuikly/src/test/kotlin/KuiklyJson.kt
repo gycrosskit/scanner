@@ -1,10 +1,12 @@
 package com.tencent.kuikly.core.nvi.serialization.json
-/** 输入/回执对象替身；不承诺覆盖 SDK JSON 序列化。 */
-class JSONObject {
-    private val values = mutableMapOf<String, Any>()
-    fun put(key: String, value: Any) { values[key] = value }
-    fun optString(key: String) = values[key] as? String ?: ""
-    fun optDouble(key: String, fallback: Double) = (values[key] as? Number)?.toDouble() ?: fallback
-    fun optLong(key: String, fallback: Long) = (values[key] as? Number)?.toLong() ?: fallback
-    override fun toString() = values.toString()
+/** JVM JSON/transport double; does not assert the native Kuikly SDK serializer. */
+class JSONObject private constructor(private val delegate: org.json.JSONObject) {
+ constructor():this(org.json.JSONObject())
+ constructor(text:String):this(org.json.JSONObject(text))
+ fun put(key:String,value:Any) {delegate.put(key,value)}
+ fun opt(key:String):Any?=delegate.opt(key)
+ fun optString(key:String)=delegate.optString(key, "")
+ fun optDouble(key:String,fallback:Double)=delegate.optDouble(key,fallback)
+ fun optLong(key:String,fallback:Long)=delegate.optLong(key,fallback)
+ override fun toString()=delegate.toString()
 }
