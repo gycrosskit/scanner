@@ -207,7 +207,18 @@ jobs:
             x86_64) native_target=IosX64; native_test=iosX64Test ;;
             *) echo "Unsupported macOS architecture" >&2; exit 1 ;;
           esac
-          python3 scripts/ci-run.py --log ci-diagnostics/native-2.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :scanner-core:compileKotlinIosArm64 :scanner-core:compileKotlin${native_target} :scanner-core:compileKotlinOhosArm64 :scanner-kuikly:compileKotlinIosArm64 :scanner-kuikly:compileKotlin${native_target} :scanner-kuikly:compileKotlinOhosArm64 --no-daemon --max-workers=1 --stacktrace
+          python3 scripts/ci-run.py --log ci-diagnostics/native-2.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" --info :scanner-core:compileKotlinIosArm64 :scanner-core:compileKotlin${native_target} :scanner-core:${native_test} :scanner-core:compileKotlinOhosArm64 :scanner-kuikly:compileKotlinIosArm64 :scanner-kuikly:compileKotlin${native_target} :scanner-kuikly:compileKotlinOhosArm64 --no-daemon --max-workers=1 --stacktrace
+          python3 - "scanner-core/build/test-results/$native_test" <<'TEST_RESULTS'
+          import sys, xml.etree.ElementTree as ET
+          from pathlib import Path
+          reports = list(Path(sys.argv[1]).glob('TEST-*.xml'))
+          assert reports, 'Native test reports are missing; skipped target is not a pass'
+          cases = [case for report in reports for case in ET.parse(report).getroot().iter('testcase')]
+          executed = [case for case in cases if case.find('skipped') is None]
+          assert executed, 'No native test case executed'
+          assert all(case.find('failure') is None and case.find('error') is None for case in executed)
+          print(f'Native cases: {len(executed)} executed, {len(cases)-len(executed)} skipped')
+          TEST_RESULTS
       - run: python3 scripts/ci-run.py --log ci-diagnostics/native-3.log -- python3 tests/run-scanner-roi.py "$RUNNER_TEMP/scanner-roi-fixed"
         if: needs.changes.outputs.source == 'true'
         timeout-minutes: 15
