@@ -98,6 +98,7 @@ jobs:
         timeout-minutes: 10
         run: |
           python3 scripts/ci-run.py --log ci-diagnostics/fork-host-fixture.log -- python3 verification/ci/test_fork_host.py
+          python3 scripts/ci-run.py --log ci-diagnostics/fork-download-fixture.log -- python3 verification/ci/test_fork_download.py
           python3 scripts/ci-run.py --log ci-diagnostics/contracts-1.log -- python3 scripts/test-check-maven.py
           python3 scripts/ci-run.py --log ci-diagnostics/contracts-2.log -- python3 scripts/test-jitpack-metadata.py
           TYPESCRIPT_PATH="$RUNNER_TEMP/ci-tools/node_modules/typescript" python3 scripts/ci-run.py --log ci-diagnostics/contracts-3.log -- node --test tests/scanner.cjs tests/scanner-preview.cjs
@@ -132,7 +133,13 @@ jobs:
         timeout-minutes: 40
       - timeout-minutes: 40
         run: |
-          python3 scripts/ci-run.py --log ci-diagnostics/android-3.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification-kuikly test --info --stacktrace --no-daemon --max-workers=1
+          if python3 scripts/ci-run.py --log ci-diagnostics/android-3.log -- bash gradlew --init-script "$PWD/scripts/ci-repositories.gradle" -p verification-kuikly test --info --stacktrace --no-daemon --max-workers=1; then
+            exit 0
+          else
+            ci_fixture_status=$?
+          fi
+          python3 scripts/ci-run.py --log ci-diagnostics/android-fork-download.log -- python3 scripts/ci-diagnose-fork-download.py || true
+          exit "$ci_fixture_status"
       - name: Save public CI diagnostics
         if: always()
         uses: gycrosskit/.github/actions/ci-diagnostics@607ff44db144c68fc6523de38c04aac29e427b68
