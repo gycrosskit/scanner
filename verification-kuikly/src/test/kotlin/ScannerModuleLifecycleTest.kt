@@ -2,12 +2,34 @@ package io.github.gycrosskit.scanner.kuikly
 import com.tencent.kuikly.core.nvi.serialization.json.JSONObject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.test.*
 import kotlin.test.*
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.intrinsics.startCoroutineUninterceptedOrReturn
 @OptIn(ExperimentalCoroutinesApi::class)
 class ScannerModuleLifecycleTest {
+    @Test fun `cancelled caller never starts scan or decodes input`() = runTest {
+        val module = ScannerModule()
+        for (operation in listOf<suspend () -> String?>(
+            { module.scanCode() },
+            { module.decode(byteArrayOf()) },
+            { module.decode(byteArrayOf(1)) },
+            { module.decode(ByteArray(32 * 1024 * 1024 + 1)) },
+        )) {
+            assertFailsWith<CancellationException> {
+                // 必须进入方法验证入口检查；普通 async 会在调度前取消，无法发现多余 native 调用。
+                operation.startCoroutineUninterceptedOrReturn(object : Continuation<String?> {
+                    override val context = Job().apply { cancel() } + StandardTestDispatcher(testScheduler)
+                    override fun resumeWith(result: Result<String?>) { error("Cancelled entry must complete synchronously") }
+                })
+            }
+            assertTrue(module.calls.isEmpty())
+        }
+    }
+
     @Test fun `system scan preserves nonempty whitespace text`() = runTest {
         val module = ScannerModule()
         val result = async { module.scanCode() }
