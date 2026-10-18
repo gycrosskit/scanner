@@ -7,6 +7,7 @@ import com.tencent.kuikly.core.nvi.serialization.json.JSONObject
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.EmptyCoroutineContext
@@ -22,6 +23,7 @@ class ScannerModule : Module(), QrCodeDecoder {
     private val pending = mutableSetOf<CancellableContinuation<JSONObject?>>()
     override fun moduleName(): String = NAME
     override suspend fun decode(bytes: ByteArray): String? {
+        coroutineContext.ensureActive()
         if (bytes.isEmpty() || bytes.size > MAX_BYTES) return null
         val result = await("decode", JSONObject().apply { put("data", Base64.encode(bytes)) })
         return result?.optString("value")?.takeIf { result.optString("status") == "decoded" && it.isNotEmpty() }
@@ -43,6 +45,7 @@ class ScannerModule : Module(), QrCodeDecoder {
     }
 
     private suspend fun await(method: String, args: JSONObject): JSONObject? {
+        coroutineContext.ensureActive()
         if (disposed) return null
         val dispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
         val response = suspendCancellableCoroutine<JSONObject?> { continuation ->

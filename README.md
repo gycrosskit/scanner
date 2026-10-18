@@ -1,5 +1,7 @@
 # GY CrossKit Scanner
 
+2026-10-18 未发布源码修复：ScannerModule 增加调用前取消检查；原生与 KuiklyCompose 三端能力保留。本次未发布新 Maven/Swift/HAR，当前源码合同见[功能与平台差异](docs/功能与平台差异.md)，下方旧版本验收仍按原时点阅读。
+
 ## 当前功能与平台边界
 
 core 提供图片 QR 解码及 Android 原生预览，Swift 提供 CoreImage/AVFoundation；scanner-kuikly 确有三端 ScannerPreviewHost UI入口，系统扫码页仅 OHOS。
