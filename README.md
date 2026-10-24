@@ -1,5 +1,7 @@
 # GY CrossKit Scanner
 
+当前开发分支的 Kuikly 与宿主统一：KMP 使用 `2.29.1-2.0.21-ohos`，iOS/OHOS Renderer 使用 `2.29.1`。以后随宿主同步升级；本次调整尚未发布，旧版本的接入与验收记录以对应 tag 为准。
+
 2026-10-18 Maven `0.1.10-rc.1` 准备中：ScannerModule 增加调用前取消检查；原生与 KuiklyCompose 三端能力保留。归档、完整 CI 与精确公开消费以该 RC 的 Release/Actions 为准，尚不宣称发布或设备验收完成。Swift `0.1.8` / HAR `0.1.4` 未变，不随 Maven 空升；当前源码合同见[功能与平台差异](docs/功能与平台差异.md)。
 
 ## 当前功能与平台边界
