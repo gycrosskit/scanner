@@ -5,9 +5,12 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
+assert os.environ.get('CI_AUTOMATION_ROOT'), 'Fixed CI source binding required'
+sys.path.insert(0, str(Path(os.environ['CI_AUTOMATION_ROOT']).resolve(strict=True)))
 SCRIPT = ROOT / 'scripts/ci-diagnose-fork-download.py'
 with tempfile.TemporaryDirectory() as directory:
     root = Path(directory)
@@ -64,11 +67,9 @@ print('200 ' + address + ' 0.100000 0.200000', end='')
         if case == 'wrong_remote':
             assert not receipts[1]['valid_pom']
 
-    # 执行 workflow 的实际 shell 分支，验证诊断成功也不会覆盖原构建失败。
-    workflow = (ROOT / '.github/workflows/regression.yml').read_text()
-    start = workflow.index('          if python3 scripts/ci-run.py --log ci-diagnostics/android-3.log')
-    end = workflow.index('\n      - name:', start)
-    block = '\n'.join(line[10:] for line in workflow[start:end].splitlines())
+    from jenkins.component_checks import matrix
+    block = next(step['script'] for step in matrix('scanner')['jobs']['android']['steps']
+                 if 'ci-diagnose-fork-download.py' in step['script'])
     (root / 'scripts').mkdir()
     shutil.copyfile(SCRIPT, root / 'scripts/ci-diagnose-fork-download.py')
     (root / 'scripts/ci-run.py').write_text('import os, sys\nargs = sys.argv[sys.argv.index("--") + 1:]\nos.execvp(args[0], args)\n')
@@ -86,4 +87,4 @@ print('200 ' + address + ' 0.100000 0.200000', end='')
     (root / 'scripts/ci-diagnose-fork-download.py').write_text('raise SystemExit(17)\n')
     result = subprocess.run(['bash', '-ec', block], cwd=root, env=environment, capture_output=True, text=True)
     assert result.returncode == 9, 'Diagnostic failure replaced the original Gradle exit'
-print('fork download diagnostics: 6 transport/body cases and 3 real workflow branches passed')
+print('fork download diagnostics: 6 transport/body cases and 3 real Jenkins branches passed')
