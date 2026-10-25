@@ -5,9 +5,12 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
+assert os.environ.get('CI_AUTOMATION_ROOT'), 'Fixed CI source binding required'
+sys.path.insert(0, str(Path(os.environ['CI_AUTOMATION_ROOT']).resolve(strict=True)))
 SCRIPT = ROOT / 'scripts/ci-diagnose-fork-download.py'
 with tempfile.TemporaryDirectory() as directory:
     root = Path(directory)
@@ -64,4 +67,24 @@ print('200 ' + address + ' 0.100000 0.200000', end='')
         if case == 'wrong_remote':
             assert not receipts[1]['valid_pom']
 
-print('fork download diagnostics: 6 transport/body cases passed')
+    from jenkins.component_checks import matrix
+    block = next(step['script'] for step in matrix('scanner')['jobs']['android']['steps']
+                 if 'ci-diagnose-fork-download.py' in step['script'])
+    (root / 'scripts').mkdir()
+    shutil.copyfile(SCRIPT, root / 'scripts/ci-diagnose-fork-download.py')
+    (root / 'scripts/ci-run.py').write_text('import os, sys\nargs = sys.argv[sys.argv.index("--") + 1:]\nos.execvp(args[0], args)\n')
+    (root / 'gradlew').write_text('printf "called\\n" >> "$MOCK_GRADLE_CALLS"\nexit "$MOCK_GRADLE_EXIT"\n')
+    gradle_calls = root / 'gradle-calls'
+    for status in [0, 9]:
+        calls.unlink(missing_ok=True)
+        gradle_calls.unlink(missing_ok=True)
+        environment.update(MOCK_CASE='connect_timeout', CI_FORK_HOST_FALLBACK_IP='36.153.109.99',
+                           MOCK_GRADLE_CALLS=str(gradle_calls), MOCK_GRADLE_EXIT=str(status))
+        result = subprocess.run(['bash', '-ec', block], cwd=root, env=environment, capture_output=True, text=True)
+        assert result.returncode == status, (status, result.stdout, result.stderr)
+        assert gradle_calls.read_text().splitlines() == ['called']
+        assert calls.exists() == (status != 0)
+    (root / 'scripts/ci-diagnose-fork-download.py').write_text('raise SystemExit(17)\n')
+    result = subprocess.run(['bash', '-ec', block], cwd=root, env=environment, capture_output=True, text=True)
+    assert result.returncode == 9, 'Diagnostic failure replaced the original Gradle exit'
+print('fork download diagnostics: 6 transport/body cases and 3 real Jenkins branches passed')
