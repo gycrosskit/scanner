@@ -2,13 +2,13 @@
 
 当前开发分支的 Kuikly 与宿主统一：KMP 使用 `2.29.1-2.0.21-ohos`，iOS/OHOS Renderer 使用 `2.29.1`。以后随宿主同步升级；本次调整尚未发布，旧版本的接入与验收记录以对应 tag 为准。
 
-Maven / Swift Package / HAR `1.0.0` 正式候选准备中，尚未发布：ScannerModule 增加调用前取消检查；原生与 KuiklyCompose 三端能力保留。归档、Jenkins、精确公开消费与 HAR Registry 安装以本轮收据为准，尚不宣称发布或设备验收完成。当前源码合同见[功能与平台差异](docs/功能与平台差异.md)。
+Maven / Swift Package / HAR `1.0.1` 正式候选准备中，尚未发布：ScannerModule 增加调用前取消检查；原生与 KuiklyCompose 三端能力保留。归档、Jenkins、精确公开消费与 HAR Registry 安装以本轮收据为准，尚不宣称发布或设备验收完成。当前源码合同见[功能与平台差异](docs/功能与平台差异.md)。
 
 ## 当前功能与平台边界
 
 core 提供图片 QR 解码及 Android 原生预览，Swift 提供 CoreImage/AVFoundation；scanner-kuikly 确有三端 ScannerPreviewHost UI入口，系统扫码页仅 OHOS。
 
-已发布基线：Maven 0.1.9；Swift Package 0.1.8；HAR 0.1.4。下面安装示例使用准备中的三渠道 1.0.0 候选，不能用旧 Release 的远程验收代算。源码修复与平台边界见[功能与平台差异](docs/功能与平台差异.md)，旧渠道验收见[版本发布记录](https://github.com/gycrosskit/scanner/releases/tag/0.1.9)。
+已发布基线：Maven 0.1.9；Swift Package 0.1.8；HAR 0.1.4。下面安装示例使用准备中的三渠道 1.0.1 候选，不能用旧 Release 的远程验收代算。源码修复与平台边界见[功能与平台差异](docs/功能与平台差异.md)，旧渠道验收见[版本发布记录](https://github.com/gycrosskit/scanner/releases/tag/0.1.9)。
 
 当前测试覆盖、执行时点和未验收项集中见[验证范围](docs/功能与平台差异.md#验证范围)，复现命令见[开发与验证](docs/开发与验证.md)。
 
@@ -28,7 +28,7 @@ Kuikly Compose `ScannerPreviewHost`（Android/iOS/OHOS）提供共用反馈入�
 | iOS | KMP 解码 bridge，或 Swift Package `GycScannerNative` | iOS 15+，Swift tools 5.9 |
 | HarmonyOS | 原生 HAR，或 `scanner-kuikly` + HAR | 当前 HAR 的 target/compatible SDK 均为 API 22；需要设备提供 ScanKit |
 
-Android/iOS/HarmonyOS 提供嵌入式预览；HarmonyOS 另提供系统扫码页。纯 OpenHarmony 设备不保证有 ScanKit，失败返回 `failed`。KMP 使用 Kotlin `2.2.21-1.0.0`，Kuikly 使用 `2.28.0-2.0.21-ohos`；OHOS 工具链配置见接入指南。
+Android/iOS/HarmonyOS 提供嵌入式预览；HarmonyOS 另提供系统扫码页。纯 OpenHarmony 设备不保证有 ScanKit，失败返回 `failed`。KMP 使用 Kotlin `2.2.21-1.0.0`，Kuikly 使用 `2.29.1-2.0.21-ohos`；OHOS 工具链配置见接入指南。
 
 ## 架构与调用流程
 
@@ -116,19 +116,19 @@ dependencyResolutionManagement {
 
 ```kotlin
 commonMain.dependencies {
-    implementation("com.github.gycrosskit.scanner:scanner-core:1.0.0")
+    implementation("com.github.gycrosskit.scanner:scanner-core:1.0.1")
 }
 ohosArm64Main.dependencies {
-    implementation("com.github.gycrosskit.scanner:scanner-kuikly:1.0.0")
+    implementation("com.github.gycrosskit.scanner:scanner-kuikly:1.0.1")
 }
 ```
 
-iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/scanner.git`，候选选择精确版本 `1.0.0`（尚未发布），产品 `GycScannerNative`。
+iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/scanner.git`，候选选择精确版本 `1.0.1`（尚未发布），产品 `GycScannerNative`。
 
 HarmonyOS 原生包独立安装：
 
 ```sh
-ohpm install @gycrosskit/scanner-native@1.0.0
+ohpm install @gycrosskit/scanner-native@1.0.1
 ```
 
 2026-10-07 官方公共 Registry metadata 已包含精确版本 `0.1.3`（当时预览 UI 所需 HAR）；全新 cache 的精确 Registry 下载/安装仍在独立验证中。历史验收中 NOTFOUND 是对应时间的记录。
@@ -183,14 +183,14 @@ Apache-2.0，见 [LICENSE](LICENSE)。
 
 ## 自动回归
 
-候选归档入口：`VERSION=1.0.0 bash scripts/package-maven.sh`。仅在受控 macOS 构建环境执行；输出 `build/release/1.0.0/` 的 Maven 归档、`SHA256SUMS` 和 `source-receipt.json`。严格检查 12 个 publications 后冻结，新 checksum 必须取真实归档摘要。旧 `0.1.9` 验收与 checksum 保留原时点。
+候选归档入口：`VERSION=1.0.1 bash scripts/package-maven.sh`。仅在受控 macOS 构建环境执行；输出 `build/release/1.0.1/` 的 Maven 归档、`SHA256SUMS` 和 `source-receipt.json`。严格检查 12 个 publications 后冻结，新 checksum 必须取真实归档摘要。旧 `0.1.9` 验收与 checksum 保留原时点。
 
-[Component regression](.github/workflows/regression.yml) 按事件分阶段：PR 先判断变更范围，仅源码变更运行已有 Android/Native 测试与编译；纯文档 PR 和 `main` push 只运行轻量脚本/配置检查。手动运行不填版本时执行源码回归，未知路径保守按源码处理。源码 PR 执行验收，main 保持轻量检查，Release 验证精确远程坐标与消费者；线上耗时以实际 Actions 运行为准。
+当前源码回归使用[统一远程验证（Jenkins）](https://github.com/gycrosskit/.github/blob/main/docs/统一远程验证.md)，按已推送源码 ref/SHA 选择对应组件；平台命令与参数以受信 Jenkins recipe 为准。实际执行范围、测试数量、结果与耗时以绑定源码/CI SHA 的构建回执为准，轻量检查或跳过不算平台测试通过。
 
-Maven Release 发布或手动填写精确已发布版本时，`verify-public` 统一校验一次冻结归档、精确 tag/commit、完整 publication 清单和公开文件；通过后 Android/Native 独立消费者从 JitPack 解析该版本。PR 不再反复消费旧基线；不使用 `mavenLocal`、本库源码或归档替换远程依赖。此流程不发布二进制。
+候选冻结与消费按[发布流程](https://github.com/gycrosskit/.github/blob/main/docs/发布流程.md)使用独立 Job：`component-ci/package` 绑定准确 SOURCE_SHA 生成冻结候选并验证私有消费，`component-ci/release` 绑定准确 Tag/候选执行发布及独立公开消费。核对冻结归档、精确 tag/commit、完整 publication 清单和公开文件，不使用 `mavenLocal`、本库源码或 staging 替换公开依赖；各阶段证据分别记录。
 
 OHOS KLIB 编译不代表 HAR 构建、ohpm 上架或真机验收。当前没有已确认可用的 DevEco/Hvigor runner，这些检查尚未自动化，不能作为 CI 通过范围。
 
-阶段、缓存、有限网络重试、失败记录与证据边界见[共用 CI 规则](https://github.com/gycrosskit/.github/blob/main/docs/持续集成门禁.md)；本库实际平台命令以 workflow 为准。源码通过、远程消费、HAR/ohpm 与设备验收分别记录。
+阶段、缓存、有限网络重试、失败记录与证据边界见[共用 CI 规则](https://github.com/gycrosskit/.github/blob/main/docs/持续集成门禁.md)；本库实际平台命令以 Jenkins 的固定版本 recipe 为准。源码通过、远程消费、HAR/ohpm 与设备验收分别记录。
 
 此版本统一图片解码输入最大 32 MiB（超限为 null/原生 invalid_content），原生预览默认识别区为 260 dp/points/vp；宿主显式 frame 参数仍优先。
