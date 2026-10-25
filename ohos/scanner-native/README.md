@@ -1,11 +1,11 @@
 # @gycrosskit/scanner-native
 
-当前 Maven / Swift Package / HAR 均为 `1.0.0` 未发布候选；构建、精确公开消费与 OHPM Registry 安装待本轮收据。以下链接保留历史 `0.1.8` 发布证据。完整功能与五入口限制见[功能与平台差异](https://github.com/gycrosskit/scanner/blob/0.1.8/docs/功能与平台差异.md)；构建、固定 Release HAR 消费与 OHPM Registry 可安装性分别见[此版发布记录](https://github.com/gycrosskit/scanner/releases/tag/0.1.8)。
+当前 Maven / Swift Package / HAR 均为 `1.0.1` 未发布候选；构建、精确公开消费与 OHPM Registry 安装待本轮收据。以下链接保留历史 `0.1.8` 发布证据。完整功能与五入口限制见[功能与平台差异](https://github.com/gycrosskit/scanner/blob/0.1.8/docs/功能与平台差异.md)；构建、固定 Release HAR 消费与 OHPM Registry 可安装性分别见[此版发布记录](https://github.com/gycrosskit/scanner/releases/tag/0.1.8)。
 
 HarmonyOS ScanKit 系统二维码扫码和图片解码。当前 HAR target/compatible SDK 为 HarmonyOS API 22。
 
 ```sh
-ohpm install @gycrosskit/scanner-native@1.0.0
+ohpm install @gycrosskit/scanner-native@1.0.1
 ```
 
 ```typescript
