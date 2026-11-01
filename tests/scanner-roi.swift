@@ -38,10 +38,21 @@ extension ScannerPreviewView {
     }
 }
 
-@main final class ROIProbeApp: UIResponder, UIApplicationDelegate {
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions options: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+@main final class ROIProbeApp: UIResponder, UIApplicationDelegate {}
+
+// Use the real Scene lifecycle; the ROI assertions below are unchanged.
+@objc(GYCNativeCheckScene)
+final class ROIProbeScene: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = scene as? UIWindowScene else {
+            preconditionFailure("ROI check requires an iPhone Window Scene")
+        }
+        let window = UIWindow(windowScene: windowScene)
+        window.rootViewController = UIViewController()
+        self.window = window
+        window.makeKeyAndVisible()
         DispatchQueue.main.async { self.check() }
-        return true
     }
     private func check() {
         let region = CGRect(x: 0.3, y: 0.3, width: 0.4, height: 0.4)

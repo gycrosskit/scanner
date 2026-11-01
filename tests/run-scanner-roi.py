@@ -26,6 +26,7 @@ bundle = 'io.github.gycrosskit.scanner.roi-fixture.' + mode
 app = output / 'ScannerROIProbe.app'
 app.mkdir()
 info = {'CFBundleIdentifier': bundle, 'CFBundleExecutable': 'ScannerROIProbe', 'CFBundleName': 'ScannerROIProbe', 'CFBundleVersion': '1', 'CFBundleShortVersionString': '1.0', 'CFBundlePackageType': 'APPL', 'LSRequiresIPhoneOS': True, 'NSCameraUsageDescription': 'No camera capture in this software delegate fixture'}
+info['UIApplicationSceneManifest'] = {'UIApplicationSupportsMultipleScenes': False, 'UISceneConfigurations': {'UIWindowSceneSessionRoleApplication': [{'UISceneConfigurationName': 'NativeCheck', 'UISceneDelegateClassName': 'GYCNativeCheckScene'}]}}
 (app / 'Info.plist').write_bytes(plistlib.dumps(info))
 sdk = subprocess.check_output(['xcrun', '--sdk', 'iphonesimulator', '--show-sdk-path'], text=True).strip()
 arch = platform.machine()

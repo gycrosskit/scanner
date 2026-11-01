@@ -1,14 +1,14 @@
 # GY CrossKit Scanner
 
-当前开发分支的 Kuikly 与宿主统一：KMP 使用 `2.29.1-2.0.21-ohos`，iOS/OHOS Renderer 使用 `2.29.1`。以后随宿主同步升级；本次调整尚未发布，旧版本的接入与验收记录以对应 tag 为准。
+Kuikly 由宿主统一选择版本；组件构建基线、允许范围及消费验证边界见[功能与平台差异](docs/功能与平台差异.md#kuikly-版本与宿主选择)。 各渠道状态以精确发布记录为准，旧版本的接入与验收记录以对应 tag 为准。
 
-Maven / Swift Package / HAR `1.0.1` 正式候选准备中，尚未发布：ScannerModule 增加调用前取消检查；原生与 KuiklyCompose 三端能力保留。归档、Jenkins、精确公开消费与 HAR Registry 安装以本轮收据为准，尚不宣称发布或设备验收完成。当前源码合同见[功能与平台差异](docs/功能与平台差异.md)。
+当前 HAR 为 `1.0.2`，Maven / Swift Package 复用 `1.0.1`，不陪发。HAR Renderer 范围由宿主选择，Kuikly 构建基线保持 2.29.1；正式生产、精确公开消费与 Registry 安装分别以对应版本收据为准，不代表设备验收。当前源码合同见[功能与平台差异](docs/功能与平台差异.md)。
 
 ## 当前功能与平台边界
 
 core 提供图片 QR 解码及 Android 原生预览，Swift 提供 CoreImage/AVFoundation；scanner-kuikly 确有三端 ScannerPreviewHost UI入口，系统扫码页仅 OHOS。
 
-已发布基线：Maven 0.1.9；Swift Package 0.1.8；HAR 0.1.4。下面安装示例使用准备中的三渠道 1.0.1 候选，不能用旧 Release 的远程验收代算。源码修复与平台边界见[功能与平台差异](docs/功能与平台差异.md)，旧渠道验收见[版本发布记录](https://github.com/gycrosskit/scanner/releases/tag/0.1.9)。
+Maven / Swift Package 继续使用既有 `1.0.1`，下面 HAR 示例为 `1.0.2`；各渠道验收分别记录，不能用旧 Release 的远程验收代算。源码修复与平台边界见[功能与平台差异](docs/功能与平台差异.md)，旧渠道验收见[版本发布记录](https://github.com/gycrosskit/scanner/releases/tag/0.1.9)。
 
 当前测试覆盖、执行时点和未验收项集中见[验证范围](docs/功能与平台差异.md#验证范围)，复现命令见[开发与验证](docs/开发与验证.md)。
 
@@ -123,12 +123,12 @@ ohosArm64Main.dependencies {
 }
 ```
 
-iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/scanner.git`，候选选择精确版本 `1.0.1`（尚未发布），产品 `GycScannerNative`。
+iOS 在 Xcode 的 Package Dependencies 添加 `https://github.com/gycrosskit/scanner.git`，选择既有精确版本 `1.0.1`，产品 `GycScannerNative`。
 
 HarmonyOS 原生包独立安装：
 
 ```sh
-ohpm install @gycrosskit/scanner-native@1.0.1
+ohpm install @gycrosskit/scanner-native@1.0.2
 ```
 
 2026-10-07 官方公共 Registry metadata 已包含精确版本 `0.1.3`（当时预览 UI 所需 HAR）；全新 cache 的精确 Registry 下载/安装仍在独立验证中。历史验收中 NOTFOUND 是对应时间的记录。
