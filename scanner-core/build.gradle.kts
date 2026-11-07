@@ -17,6 +17,7 @@ kotlin {
         commonMain.dependencies { implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2-1.0.0") }
         androidMain.dependencies {
             api("com.journeyapps:zxing-android-embedded:4.3.0")
+            implementation("io.github.zxing-cpp:android:3.1.1")
         }
         androidUnitTest.dependencies { implementation("org.robolectric:robolectric:4.16") }
         commonTest.dependencies { implementation(kotlin("test")) }

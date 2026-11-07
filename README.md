@@ -2,13 +2,13 @@
 
 Kuikly 由宿主统一选择版本；组件构建基线、允许范围及消费验证边界见[功能与平台差异](docs/功能与平台差异.md#kuikly-版本与宿主选择)。 各渠道状态以精确发布记录为准，旧版本的接入与验收记录以对应 tag 为准。
 
-当前 HAR 候选为 `1.0.3`，Maven / Swift Package 复用 `1.0.1`，不陪发。HAR Renderer 范围由宿主选择，Kuikly 构建基线保持 2.29.1；正式生产、精确公开消费与 Registry 安装分别以对应版本收据为准，不代表设备验收。当前源码合同见[功能与平台差异](docs/功能与平台差异.md)。
+当前 Maven 候选为 `1.0.2`，更新 Android 图片解码；Swift Package 保持 `1.0.1`，HAR 候选保持 `1.0.3`。HAR Renderer 范围由宿主选择，Kuikly 构建基线保持 2.29.1；正式生产、精确公开消费与 Registry 安装分别以对应版本收据为准，不代表设备验收。当前源码合同见[功能与平台差异](docs/功能与平台差异.md)。
 
 ## 当前功能与平台边界
 
 core 提供图片 QR 解码及 Android 原生预览，Swift 提供 CoreImage/AVFoundation；scanner-kuikly 确有三端 ScannerPreviewHost UI入口，系统扫码页仅 OHOS。
 
-Maven / Swift Package 继续使用既有 `1.0.1`，下面 HAR 示例为 `1.0.3`；各渠道验收分别记录，不能用旧 Release 的远程验收代算。源码修复与平台边界见[功能与平台差异](docs/功能与平台差异.md)，旧渠道验收见[版本发布记录](https://github.com/gycrosskit/scanner/releases/tag/0.1.9)。
+下面 Maven 示例为 `1.0.2` 候选、Swift Package 为 `1.0.1`、HAR 为 `1.0.3`；各渠道验收分别记录，不能用旧 Release 的远程验收代算。源码修复与平台边界见[功能与平台差异](docs/功能与平台差异.md)，旧渠道验收见[版本发布记录](https://github.com/gycrosskit/scanner/releases/tag/0.1.9)。
 
 当前测试覆盖、执行时点和未验收项集中见[验证范围](docs/功能与平台差异.md#验证范围)，复现命令见[开发与验证](docs/开发与验证.md)。
 
@@ -24,7 +24,7 @@ Kuikly Compose `ScannerPreviewHost`（Android/iOS/OHOS）提供共用反馈入�
 
 | 平台 | 接入方式 | 系统要求 |
 | --- | --- | --- |
-| Android | KMP `scanner-core`，ZXing 图片解码与原生预览 | API 24+ |
+| Android | KMP `scanner-core`，ZXing-C++ 图片解码、ZXing 原生预览 | API 24+ |
 | iOS | KMP 解码 bridge，或 Swift Package `GycScannerNative` | iOS 15+，Swift tools 5.9 |
 | HarmonyOS | 原生 HAR，或 `scanner-kuikly` + HAR | 当前 HAR 的 target/compatible SDK 均为 API 22；需要设备提供 ScanKit |
 
@@ -37,7 +37,7 @@ Android/iOS/HarmonyOS 提供嵌入式预览；HarmonyOS 另提供系统扫码页
 ```mermaid
 flowchart TB
     Host[宿主] --> Core[scanner-core<br/>QrCodeDecoder]
-    Core --> Android[AndroidQrCodeDecoder<br/>ZXing]
+    Core --> Android[AndroidQrCodeDecoder<br/>ZXing-C++]
     Core --> IOS[IosQrCodeDecoder<br/>IosQrCodeBridge]
     IOS --> Swift[GycScannerNative<br/>CoreImage]
     Core --> Module[scanner-kuikly<br/>ScannerModule]
@@ -116,10 +116,10 @@ dependencyResolutionManagement {
 
 ```kotlin
 commonMain.dependencies {
-    implementation("com.github.gycrosskit.scanner:scanner-core:1.0.1")
+    implementation("com.github.gycrosskit.scanner:scanner-core:1.0.2")
 }
 ohosArm64Main.dependencies {
-    implementation("com.github.gycrosskit.scanner:scanner-kuikly:1.0.1")
+    implementation("com.github.gycrosskit.scanner:scanner-kuikly:1.0.2")
 }
 ```
 
@@ -183,7 +183,7 @@ Apache-2.0，见 [LICENSE](LICENSE)。
 
 ## 自动回归
 
-候选归档入口：`VERSION=1.0.1 bash scripts/package-maven.sh`。仅在受控 macOS 构建环境执行；输出 `build/release/1.0.1/` 的 Maven 归档、`SHA256SUMS` 和 `source-receipt.json`。严格检查 12 个 publications 后冻结，新 checksum 必须取真实归档摘要。旧 `0.1.9` 验收与 checksum 保留原时点。
+候选归档入口：`VERSION=1.0.2 bash scripts/package-maven.sh`。仅在受控 macOS 构建环境执行；输出 `build/release/1.0.2/` 的 Maven 归档、`SHA256SUMS` 和 `source-receipt.json`。严格检查 12 个 publications 后冻结，新 checksum 必须取真实归档摘要。旧 `0.1.9` 验收与 checksum 保留原时点。
 
 当前源码回归使用[统一远程验证（Jenkins）](https://github.com/gycrosskit/.github/blob/main/docs/统一远程验证.md)，按已推送源码 ref/SHA 选择对应组件；平台命令与参数以受信 Jenkins recipe 为准。实际执行范围、测试数量、结果与耗时以绑定源码/CI SHA 的构建回执为准，轻量检查或跳过不算平台测试通过。
 
