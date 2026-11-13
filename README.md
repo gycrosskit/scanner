@@ -2,13 +2,13 @@
 
 Kuikly 由宿主统一选择版本；组件构建基线、允许范围及消费验证边界见[功能与平台差异](docs/功能与平台差异.md#kuikly-版本与宿主选择)。 各渠道状态以精确发布记录为准，旧版本的接入与验收记录以对应 tag 为准。
 
-当前 Maven 候选为 `1.0.2`，更新 Android 图片解码；Swift Package 保持 `1.0.1`，HAR 候选保持 `1.0.3`。HAR Renderer 范围由宿主选择，Kuikly 构建基线保持 2.29.1；正式生产、精确公开消费与 Registry 安装分别以对应版本收据为准，不代表设备验收。当前源码合同见[功能与平台差异](docs/功能与平台差异.md)。
+当前 Maven 为已发布的 [`1.0.2`](https://github.com/gycrosskit/scanner/releases/tag/1.0.2)，更新 Android 图片解码；Swift Package 保持 `1.0.1`，HAR 为已发布的 [`1.0.3`](https://github.com/gycrosskit/scanner/releases/tag/har-1.0.3)。HAR Renderer 范围由宿主选择，Kuikly 构建基线保持 2.29.1；正式生产、精确公开消费与 Registry 安装分别以对应版本收据为准，不代表设备验收。当前源码合同见[功能与平台差异](docs/功能与平台差异.md)。
 
 ## 当前功能与平台边界
 
 core 提供图片 QR 解码及 Android 原生预览，Swift 提供 CoreImage/AVFoundation；scanner-kuikly 确有三端 ScannerPreviewHost UI入口，系统扫码页仅 OHOS。
 
-下面 Maven 示例为 `1.0.2` 候选、Swift Package 为 `1.0.1`、HAR 为 `1.0.3`；各渠道验收分别记录，不能用旧 Release 的远程验收代算。源码修复与平台边界见[功能与平台差异](docs/功能与平台差异.md)，旧渠道验收见[版本发布记录](https://github.com/gycrosskit/scanner/releases/tag/0.1.9)。
+下面 Maven 示例为已发布的 `1.0.2`、Swift Package 为 `1.0.1`、HAR 为已发布的 `1.0.3`；各渠道验收分别记录，不能用旧 Release 的远程验收代算。源码修复与平台边界见[功能与平台差异](docs/功能与平台差异.md)，旧渠道验收见[版本发布记录](https://github.com/gycrosskit/scanner/releases/tag/0.1.9)。
 
 当前测试覆盖、执行时点和未验收项集中见[验证范围](docs/功能与平台差异.md#验证范围)，复现命令见[开发与验证](docs/开发与验证.md)。
 
