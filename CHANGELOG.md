@@ -1,5 +1,11 @@
 # 更新日志
 
+## 1.0.3（Maven / Swift Package 统一候选）
+
+- Maven 与 Swift Package 准备统一到既有 HAR/OHPM `1.0.3`，同步消费默认版本与安装示例。
+- 保留 Maven `1.0.2` 的 Android 解码实现及既有 Swift/HAR 功能；不改写已发布标签、归档或校验值。
+- Maven / Swift Package 尚未发布，构建与精确公开消费须分别验收。
+
 ## Maven 1.0.2
 
 - Android 相册图片解码改用 ZXing-C++ 3.1.1，提高拍屏二维码的识别能力；相机预览沿用现有实现。
