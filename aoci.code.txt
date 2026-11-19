@@ -1,0 +1,159 @@
+#AOCI-CODE-VOLUME: 1
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/===
+.gitattributes[FV5T]: F:约束文本检出为LF以保持AOCI字节指纹跨平台一致 | R:- | A:- | S:二进制由Git自动识别，不转换内容
+.gitignore[FV4T]: F:排除Gradle、Swift与鸿蒙产物缓存及本机MCP配置 | R:- | A:- | S:-
+AGENTS.md[SG7S]: F:规定扫码组件的评审、生命周期边界和AOCI认知维护合同 | R:code:docs/开发与验证.md | A:- | S:扫码返回原始文本，业务校验和导航归宿主；暂停销毁后不能交付旧结果或重启相机
+CHANGELOG.md[SV4T]: F:记录扫码组件各渠道解码、ROI与候选版本变更 | R:code:README.md | A:- | S:各渠道状态分别成立，统一候选不证明已发布
+LICENSE[SG3M]: F:声明Apache2.0许可的使用、分发、专利与免责条件 | R:- | A:- | S:-
+Package.swift[FV6T]: F:将iOS原生扫码Swift源码声明为iOS15起的SPM产品 | R:code:iosApp/Sources/GycScannerNative/QrCodeDecoder.swift,code:iosApp/Sources/GycScannerNative/ScannerPreviewView.swift | A:GycScannerNative | S:-
+README.md[SG7S]: F:说明图片解码、系统扫码与嵌入预览的三端安装和使用 | R:code:docs/接入指南.md,code:docs/功能与平台差异.md | A:QrCodeDecoder,ScannerModule,ScannerPreviewView | S:系统扫码页由平台管理，组件销毁只结束等待
+build.gradle.kts[FV6T]: F:配置共享插件、可覆盖组及候选版本并为所有Maven publication附许可 | R:code:gradle/libs.versions.toml,code:settings.gradle.kts | A:- | S:默认版本1.0.3，GROUP与VERSION环境变量可覆盖
+gradle.properties[FV4T]: F:配置AndroidX、Gradle堆及不可用Native目标处理 | R:- | A:- | S:-
+gradlew[EV4S]: F:解析Java环境和平台路径后启动Gradle Wrapper | R:code:gradle/wrapper/gradle-wrapper.properties | A:GradleWrapperMain | S:-
+gradlew.bat[EV4T]: F:在Windows选择Java并启动Gradle Wrapper | R:code:gradle/wrapper/gradle-wrapper.properties | A:GradleWrapperMain | S:-
+jitpack-install.sh[OV8T]: F:下载冻结Maven归档并核验源码身份、来源回执、摘要和解包边界后安装 | R:code:jitpack.yml | A:- | S:VERSION须不可变语义版本且回执sha/tree匹配Tag；拒绝重复字段、归档链接/穿越/重复及超限，不重新编译
+jitpack.yml[FV5T]: F:指定JDK21并调用冻结Maven归档安装器 | R:code:jitpack-install.sh | A:- | S:-
+release-pack.py[OV6T]: F:归档当前版本Maven目录并回读校验module JSON、ZIP CRC和无AppleDouble | R:code:scripts/package-maven.sh | A:- | S:不携带旧staging，归档后再验证实际字节
+settings.gradle.kts[FV6T]: F:配置扫码插件与依赖仓库并注册core和Kuikly模块 | R:code:scanner-core/build.gradle.kts,code:scanner-kuikly/build.gradle.kts | A:- | S:项目级仓库声明被FAIL_ON_PROJECT_REPOS拒绝
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/docs/===
+0.1.5远程发布验收.md[SV4T]: F:保留0.1.5的页面dispatcher取消修复及精确远程发布消费证据 | R:code:scanner-kuikly/src/commonMain/kotlin/io/github/gycrosskit/scanner/kuikly/ScannerModule.kt | A:- | S:历史回执不证明当前候选或真实ScanKit设备行为
+0.1.7-candidate-freeze.json[SV5S]: F:冻结0.1.7候选源码、Maven归档、Swift文件及验证来源身份 | R:code:docs/0.1.7-iOS-ROI候选.md | A:- | S:候选freeze保留原时点，不代表已创建Tag或完成公开发布
+0.1.7-iOS-ROI候选.md[SU6T]: F:说明iOS预览ROI就绪前首帧窗口修复、回归入口及边界 | R:code:iosApp/Sources/GycScannerNative/ScannerPreviewView.swift,code:tests/run-scanner-roi.py | A:- | S:有效ROI配置前关闭delegate结果入口，接受正面积交集，不借无效metadata timestamp推断帧时序
+功能与平台差异.md[SG7T]: F:维护三端解码、预览、ROI、反馈与系统扫码的能力矩阵及验证边界 | R:code:docs/接入指南.md,code:README.md | A:- | S:系统扫码Module仅OHOS，Android/iOS需core或Swift桥；32MiB边界、像素/dp/points/vp单位不可混同
+发布验收-0.1.4.md[SV4T]: F:保留0.1.4发布源码、冻结归档、Maven/HAR及公开消费的历史证据 | R:code:README.md | A:- | S:-
+完整源码审查.md[SQ4T]: F:保存扫码生产源码、调用链与历史审查和未验收范围 | R:code:docs/开发与验证.md | A:- | S:-
+开发与验证.md[SV7T]: F:提供三端生产编译、行为回归、ROI及独立原生消费验证入口 | R:code:scripts/build.sh,code:tests/run-scanner-roi.py | A:- | S:日常compile只生产模块，历史Actions不代替当前准确SHA回执，UP-TO-DATE不算本轮执行
+接入指南.md[SG7S]: F:说明KMP、Swift、HAR安装及宿主相机预览、图片桥和Kuikly接线 | R:code:README.md,code:docs/功能与平台差异.md | A:- | S:宿主申请CAMERA并在前后台控制running，销毁永久释放；Android框尺寸px须density换算，SPM和HAR分别安装
+跨端行为候选.md[SU5T]: F:记录三端KuiklyCompose预览Host与统一反馈的历史候选及后续发布边界 | R:code:scanner-kuikly/src/commonMain/kotlin/io/github/gycrosskit/scanner/kuikly/ScannerPreviewHost.kt | A:- | S:反馈默认关闭，启用宿主反馈时避免同时启用Android原生音效振动
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/gradle/===
+libs.versions.toml[FV6T]: F:集中声明AGP、定制Kotlin、Kuikly及Compose编译插件坐标 | R:code:build.gradle.kts | A:- | S:Kuikly构建基线2.29.1-2.0.21-ohos，Kotlin为厂商2.2.21-1.0.0
+native-toolchain.properties[FV5T]: F:声明Kotlin Native版本、四个目标和工具链修订 | R:- | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/gradle/wrapper/===
+gradle-wrapper.properties[FV5T]: F:固定Gradle8.11.1分发与Wrapper缓存目录 | R:code:gradlew,code:gradlew.bat | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/iosApp/Sources/GycScannerNative/===
+QrCodeDecoder.swift[KH7T]: F:使用CoreImage从图片文件数据返回首个非空二维码原始文本 | R:code:scanner-core/src/iosMain/kotlin/io/github/gycrosskit/scanner/IosQrCodeDecoder.kt | A:QrCodeDecoder.decode | S:调用线程执行，空或超32MiB及无效图返回nil，不承担业务格式校验
+ScannerPreviewView.swift[LU8S]: F:用AVFoundation实现主线程预览控制、中心ROI、单次结果及可选反馈 | R:code:scanner-kuikly/src/commonMain/kotlin/io/github/gycrosskit/scanner/kuikly/ScannerPreviewView.kt | A:ScannerPreviewView,setRunning,setScanFrameSize,setFeedbackHandler,releaseCamera | S:只有本轮generation就绪的有效ROI才接收有限QR bounds正面积交集，反馈后交原文；detach暂停，release永久清delegate与回调；权限由宿主申请，session串行启停
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/ohos/AppScope/===
+app.json5[FV3T]: F:声明鸿蒙扫码工程bundle与展示资源 | R:code:ohos/build-profile.json5 | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/ohos/===
+build-profile.json5[FV6T]: F:配置API22 HarmonyOS产品及ScannerNative模块 | R:code:ohos/scanner-native/build-profile.json5 | A:ScannerNative@default | S:target与compatible均为6.0.2(22)
+hvigorfile.ts[FV4T]: F:将鸿蒙扫码工程接入Hvigor appTasks | R:code:ohos/build-profile.json5 | A:- | S:-
+oh-package.json5[FV3T]: F:声明鸿蒙根工程模型与空依赖 | R:- | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/ohos/hvigor/===
+hvigor-config.json5[FV3T]: F:声明Hvigor模型版本与空执行配置 | R:- | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/ohos/scanner-native/===
+CHANGELOG.md[SV4T]: F:记录HAR扫码能力、候选版本与历史更新 | R:code:ohos/scanner-native/README.md | A:- | S:-
+Index.ets[LE7T]: F:导出HAR系统扫码、图片解码、Module及嵌入预览入口 | R:code:ohos/scanner-native/src/main/ets/GycScanner.ets,code:ohos/scanner-native/src/main/ets/GycScannerModule.ets,code:ohos/scanner-native/src/main/ets/GycScannerPreviewView.ets | A:GycScanner,ScanResult,GycScannerModule,GycScannerPreviewView | S:-
+LICENSE[SG3M]: F:声明HAR的Apache2.0许可、专利与免责条件 | R:- | A:- | S:-
+README.md[SG5T]: F:说明API22 ScanKit原生包的私仓安装、页面调用和生命周期 | R:code:docs/接入指南.md | A:- | S:系统扫码无法主动关闭，dispose仅抑制迟到结果
+build-profile.json5[FV4T]: F:声明Scanner HAR的stageMode与HarmonyOS默认目标 | R:code:ohos/build-profile.json5 | A:- | S:-
+hvigorfile.ts[FV4T]: F:以harTasks编译原生扫码模块 | R:code:ohos/scanner-native/build-profile.json5 | A:- | S:-
+oh-package-lock.json5[FV5T]: F:锁定Renderer2.29.1的来源、完整性及本地native类型依赖 | R:code:ohos/scanner-native/oh-package.json5 | A:- | S:本地libkuikly类型解析在Renderer包内部，不是另一个业务runtime
+oh-package.json5[FV6T]: F:声明HAR包版本1.0.3、入口、许可及Renderer构建依赖 | R:code:ohos/scanner-native/Index.ets | A:@gycrosskit/scanner-native | S:构建Renderer固定2.29.1
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/ohos/scanner-native/src/main/ets/===
+GycScanner.ets[IH8T]: F:封装ScanKit单路系统扫码与临时文件图片解码并返回原始文本状态 | R:code:ohos/scanner-native/src/main/ets/GycScannerModule.ets | A:GycScanner.scan,decode,dispose,ScanResult | S:图片限1到32MiB且循环处理短写，终态清临时文件；系统扫码并行busy，201拒绝与用户取消分开，dispose无法关闭系统页但屏蔽迟结果
+GycScannerModule.ets[IE7T]: F:为每页Renderer懒建原生扫码器并提供异步scan及Base64图片decode协议 | R:code:ohos/scanner-native/src/main/ets/GycScanner.ets | A:GycScannerModule,call,onDestroy | S:限制Base64编码长度及底层32MiB原图，销毁后不交付callback且dispose所属scanner
+GycScannerPreviewView.ets[IU8S]: F:在Kuikly Surface中承载进程单实例ScanKit自定义预览并管理ROI和单次事件 | R:code:scanner-kuikly/src/commonMain/kotlin/io/github/gycrosskit/scanner/kuikly/ScannerPreviewView.kt | A:GycScannerPreviewView,setProp,surfaceLoaded,surfaceDestroyed,areaChanged,onDestroy | S:全局队列确保旧owner成功release后新owner才init；UI和session代次分开屏蔽迟帧，vp直接用于ViewControl不重复换算；无矩形或无正面积交集rescan，release失败保留全局owner
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/ohos/scanner-native/src/main/===
+module.json5[FV4T]: F:声明ScannerNative为默认设备和平板HAR | R:- | A:ScannerNative | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/scanner-core/===
+build.gradle.kts[FV7T]: F:配置扫码core的三端目标、ZXing预览和C++图片解码依赖及staging发布 | R:code:gradle/libs.versions.toml | A:scanner-core | S:Android JVM11、minSdk24、compileSdk36，图片解码ZXing-C++3.1.1与预览ZXing独立
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/scanner-core/src/androidMain/===
+AndroidManifest.xml[FI4T]: F:声明Android相机权限供宿主Manifest合并 | R:- | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/scanner-core/src/androidMain/kotlin/io/github/gycrosskit/scanner/===
+AndroidQrCodeDecoder.kt[KH8T]: F:后台采样并按EXIF八方向规范化Bitmap后用ZXing-C++识别二维码原始文本 | R:code:scanner-core/src/commonMain/kotlin/io/github/gycrosskit/scanner/QrCodeDecoder.kt | A:AndroidQrCodeDecoder,prepareQrBitmap | S:空或超32MiB及坏图返回null，最长边采样2048；解码前后ensureActive并传播取消，Bitmap始终释放且变换失败也回收
+ScannerPreviewView.kt[LU8S]: F:承载Android ZXing相机预览、中心识别框、一次结果及可选统一反馈 | R:code:scanner-core/src/androidUnitTest/kotlin/io/github/gycrosskit/scanner/ScannerFeedbackTest.kt | A:ScannerPreviewView,setRunning,setScanFrameSize,setFeedbackEnabled,setFeedbackHandler,release | S:默认260dp换算px而公开框参数为px，启动generation隔离迟结果；先停止再反馈且反馈异常不吞原文，detach暂停，release清回调后永久禁止启动；权限归宿主
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/scanner-core/src/androidUnitTest/kotlin/io/github/gycrosskit/scanner/===
+AndroidQrCodeCancellationTest.kt[TH7T]: F:验证相同Default dispatcher内解码期间取消或抛取消不能转成null | R:code:scanner-core/src/androidMain/kotlin/io/github/gycrosskit/scanner/AndroidQrCodeDecoder.kt | A:AndroidQrCodeCancellationTest,CancellingBitmapFactory | S:使用真实生产decoder与BitmapFactory受控shadow触发取消
+AndroidQrCodeDecoderTest.kt[TH7S]: F:验证真实Bitmap预处理的32MiB边界、2048采样、EXIF八方向及QR像素保真 | R:code:scanner-core/src/androidMain/kotlin/io/github/gycrosskit/scanner/AndroidQrCodeDecoder.kt | A:AndroidQrCodeDecoderTest | S:使用Robolectric及生成图像，不证明真机相册识别准确率
+ScannerFeedbackTest.kt[TU7S]: F:验证预览默认框尺寸、一次反馈、重启、暂停释放及反馈异常不吞结果 | R:code:scanner-core/src/androidMain/kotlin/io/github/gycrosskit/scanner/ScannerPreviewView.kt | A:ScannerFeedbackTest | S:原生反馈默认关闭，测试使用相机与音效shadow
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/scanner-core/src/commonMain/kotlin/io/github/gycrosskit/scanner/===
+QrCodeDecoder.kt[LH8T]: F:定义完整图片字节到首个二维码原始文本的跨端解码合同 | R:code:scanner-core/src/androidMain/kotlin/io/github/gycrosskit/scanner/AndroidQrCodeDecoder.kt,code:scanner-core/src/iosMain/kotlin/io/github/gycrosskit/scanner/IosQrCodeDecoder.kt | A:QrCodeDecoder.decode | S:空或超32MiB、坏图和无QR返回null，取消向上传播，不修改数组或校验业务格式
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/scanner-core/src/iosMain/kotlin/io/github/gycrosskit/scanner/===
+IosQrCodeDecoder.kt[IH7T]: F:将受限图片字节复制为NSData并同步调用宿主Swift解码桥 | R:code:iosApp/Sources/GycScannerNative/QrCodeDecoder.swift,code:scanner-core/src/commonMain/kotlin/io/github/gycrosskit/scanner/QrCodeDecoder.kt | A:IosQrCodeBridge,IosQrCodeDecoder | S:不自动切线程，调用前后ensureActive；超限不复制进桥，桥不得保留调用方数据
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/scanner-core/src/iosTest/kotlin/io/github/gycrosskit/scanner/===
+IosQrCodeDecoderTest.kt[TH6T]: F:验证iOS同步桥调用前中取消传播及超限不进入原生桥 | R:code:scanner-core/src/iosMain/kotlin/io/github/gycrosskit/scanner/IosQrCodeDecoder.kt | A:IosQrCodeDecoderTest | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/scanner-kuikly/===
+build.gradle.kts[FV7T]: F:配置扫码Module及KuiklyCompose三端目标和公开传递依赖与staging发布 | R:code:scanner-core/build.gradle.kts,code:gradle/libs.versions.toml | A:scanner-kuikly | S:Android/iOS/OHOS均发布，UI公开类型通过api传递core和Compose依赖
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/scanner-kuikly/src/commonMain/kotlin/io/github/gycrosskit/scanner/kuikly/===
+ScannerModule.kt[IE8T]: F:在页面Kuikly Context提供OHOS系统扫码及Base64图片解码挂起调用和dispose | R:code:ohos/scanner-native/src/main/ets/GycScannerModule.ets,code:scanner-core/src/commonMain/kotlin/io/github/gycrosskit/scanner/QrCodeDecoder.kt | A:ScannerModule.decode,scanCode,dispose | S:页面dispatcher必须真实可用，后台取消清理派回它且不依赖取消Job；回执已排队仍在销毁后拒绝，注册期取消只注销一次；系统页不能关闭，图片限32MiB
+ScannerPreviewHost.kt[LU7T]: F:提供三端KuiklyCompose预览Host并将running、尺寸与最新事件接到类型化原生View | R:code:scanner-kuikly/src/commonMain/kotlin/io/github/gycrosskit/scanner/kuikly/ScannerPreviewView.kt | A:ScannerPreviewHost | S:rememberUpdatedState读取最新回调且running门禁；默认260dp和无反馈，反馈异常不吞原文，宿主负责权限及原生注册
+ScannerPreviewView.kt[LE7T]: F:定义三端共用原生预览View、running/框尺寸属性和结果失败事件协议 | R:code:scanner-kuikly/src/commonMain/kotlin/io/github/gycrosskit/scanner/kuikly/ScannerPreviewHost.kt | A:ScannerPreviewView,ScannerPreviewAttr,ScannerPreviewEvent,ScannerPreview | S:只接受正有限逻辑尺寸，平台适配负责px/points/vp；事件支持对象或JSON，畸形payload不抛出相机线程，结果空串忽略
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/scripts/===
+build.sh[OV7T]: F:提供扫码三端生产编译和Maven/HAR打包统一项目入口 | R:code:scripts/package-maven.sh,code:gradlew | A:compile,package | S:每次单平台，iOS同时编译Swift SPM生产目标，Harmony编译后打HAR，不执行行为测试或消费者
+check-maven.py[TV8S]: F:校验实际Maven仓库的坐标、POM许可、变体引用、文件摘要及可选字节码上限 | R:code:scripts/test-check-maven.py | A:- | S:全部变体含可选项及四种sidecar都校验，SNAPSHOT解析当前文件，publication集合精确匹配
+check-public-maven.py[TV8M]: F:从公开端点核验JitPack不可变状态、准确源码及全部publication字节并存证 | R:code:scripts/ci-release.sh,code:scripts/check-maven.py | A:ready_state,verify,main | S:不读取本机凭据，失败原响应先存证；网络重试有界且证书失败不能放宽校验，metadata可用不等于消费者编译
+ci-build-kuikly-render.sh[OV6T]: F:独立安装固定2.29.1 iOS Renderer并编译Simulator framework供消费者最终链接 | R:code:verification/build.gradle.kts | A:- | S:校验当前架构和SDK线程符号，构建目录必须绝对路径
+ci-diagnose-fork-download.py[OO6T]: F:失败后探测定制coroutines-test POM的主地址及可选公网IPv4并记录来源摘要 | R:code:scripts/ci-repositories.gradle | A:- | S:诊断不改hosts或重跑Gradle；fallback须公网单播，保留HTTPS校验并验证准确POM身份
+ci-java.security[FV3T]: F:配置Java正向DNS缓存一小时及禁负向缓存 | R:code:scripts/ci-repositories.gradle | A:- | S:-
+ci-release.sh[OV7T]: F:从准确不可变Tag下载冻结归档并检查Maven及公开publication集合 | R:code:jitpack-install.sh,code:scripts/check-maven.py,code:scripts/check-public-maven.py | A:- | S:旧标签保留8个publication，新版本12个；Tag提交而非当前PR作为发布身份
+ci-repositories.gradle[FV6T]: F:配置可选源码缓存、强制行为测试执行、DNS预热和CI仓库过滤 | R:code:scripts/ci-java.security | A:- | S:测试禁缓存及up-to-date，CI移除Aliyun避免502禁仓，定制Kotlin留Eazytec，DNS失败由真实解析裁决
+jitpack-metadata.py[OV7T]: F:裁剪JitPack不支持的源码和空资源变体并同步重定向及module摘要 | R:code:scripts/package-maven.sh | A:normalize | S:先完成全部验证再改写，非空资源或缺失目标失败，不留下部分改写
+package-maven.sh[OV7T]: F:生成全新候选Maven仓库、规范元数据、冻结归档与源码来源回执 | R:code:scripts/check-maven.py,code:scripts/jitpack-metadata.py | A:- | S:仅stable SemVer或rc且tracked源码须已提交，拒绝既有候选输出；回执绑定HEAD/tree并复查源未变；本地不上传或创建Tag
+test-check-maven.py[TV6T]: F:用真实临时staging文件验证Maven检查器对完整和损坏publication的判断 | R:code:scripts/check-maven.py | A:- | S:-
+test-jitpack-metadata.py[TV6T]: F:用真实ZIP和metadata验证变体裁剪、重定向、sidecar及失败前零改写 | R:code:scripts/jitpack-metadata.py | A:PublicationContracts | S:-
+test-package-version.py[TV6T]: F:仅执行生产版本门禁验证stable/RC准入及缺失、注入和非规范版本拒绝 | R:code:scripts/package-maven.sh | A:- | S:不进入实际打包或SDK构建
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/tests/===
+run-scanner-roi.py[TV7T]: F:将真实Swift预览原字节与同文件fixture编译成Simulator App并验证十项ROI结果 | R:code:tests/scanner-roi.swift,code:iosApp/Sources/GycScannerNative/ScannerPreviewView.swift | A:--baseline | S:baseline读取准确历史提交证明回归；安装前清旧result，结果需十项一致；不启动真实相机，输出目录须全新
+scanner-decode.swift[TH6T]: F:用CoreImage生成真实QR并断言生产解码的正常、空及32MiB超限行为 | R:code:iosApp/Sources/GycScannerNative/QrCodeDecoder.swift | A:- | S:-
+scanner-preview.cjs[TU7S]: F:对真实ArkTS预览验证vp ROI、正面积交集、代次隔离及全局相机owner释放顺序 | R:code:ohos/scanner-native/src/main/ets/GycScannerPreviewView.ets | A:- | S:旧owner释放失败阻止新init，stop失败仍尝试release；SDK由受控替身实现，不证明设备相机
+scanner-roi.swift[TU7T]: F:在真实AVFoundation delegate上注入受控metadata并检查十种ROI准入和生命周期场景 | R:code:iosApp/Sources/GycScannerNative/ScannerPreviewView.swift,code:tests/run-scanner-roi.py | A:CheckApp,CheckScene | S:同文件extension接真实private状态，无生产测试API；timestamp故意无效，不证明真实摄像头首帧
+scanner.cjs[TH7T]: F:对真实ArkTS扫码器验证系统终态、忙、销毁、图片上限和临时文件短写清理 | R:code:ohos/scanner-native/src/main/ets/GycScanner.ets | A:- | S:ScanKit与文件SDK使用异步桩，零写入应失败且文件仍关闭删除
+test_jitpack_install.py[TV7S]: F:离线执行真实冻结归档安装校验验证来源、摘要、大小和安全解包边界 | R:code:jitpack-install.sh | A:JitPackInstallTest | S:错误身份/重复字段/归档链接或穿越必须提取前失败，不联网不执行SDK
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/verification-kuikly/===
+build.gradle.kts[TV6T]: F:用JVM17独立编译生产Module及预览协议配合测试传输替身 | R:code:verification-kuikly/src/test/kotlin/KuiklyTransport.kt,code:verification-kuikly/src/test/kotlin/ScannerModuleLifecycleTest.kt | A:- | S:排除ScannerPreviewHost，替身只在独立测试工程，不能证明真实Renderer序列化或Compose界面
+settings.gradle.kts[TV4T]: F:配置独立Module生命周期测试的定制Kotlin插件和测试依赖仓库 | R:code:verification-kuikly/build.gradle.kts | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/verification-kuikly/src/test/kotlin/===
+KuiklyBase.kt[TQ4T]: F:提供生产预览协议JVM测试需要的Attr、声明View和容器替身 | R:code:verification-kuikly/build.gradle.kts | A:Attr,DeclarativeBaseView,ViewContainer | S:-
+KuiklyEvent.kt[TQ4T]: F:将预览事件绑定保存为可直接调用的测试回调表 | R:code:verification-kuikly/src/test/kotlin/ScannerPreviewEventTest.kt | A:Event | S:-
+KuiklyJson.kt[TQ4T]: F:以org.json代理生产协议测试所需的JSONObject操作 | R:code:verification-kuikly/src/test/kotlin/KuiklyTransport.kt | A:JSONObject | S:不验证真实Kuikly SDK序列化
+KuiklyTransport.kt[TQ6T]: F:截获生产Module的native调用、回执、注销线程和注册期取消时机 | R:code:verification-kuikly/src/test/kotlin/ScannerModuleLifecycleTest.kt | A:Module,CallbackRef,NativeResult | S:仅替换传输，协程与状态映射仍使用生产源码
+ScannerModuleLifecycleTest.kt[TE7S]: F:验证已取消入口、原始空白文本、dispose迟交付及后台/注册期取消的页面线程清理 | R:code:scanner-kuikly/src/commonMain/kotlin/io/github/gycrosskit/scanner/kuikly/ScannerModule.kt,code:verification-kuikly/src/test/kotlin/KuiklyTransport.kt | A:ScannerModuleLifecycleTest | S:取消入口必须零native调用，注销只一次并回页面dispatcher；测试未调用真实ScanKit
+ScannerPreviewEventTest.kt[TE6T]: F:验证预览对象和JSON事件保留原始空白文本且忽略畸形非文本结果 | R:code:scanner-kuikly/src/commonMain/kotlin/io/github/gycrosskit/scanner/kuikly/ScannerPreviewView.kt | A:ScannerPreviewEventTest | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/verification/===
+build.gradle.kts[TV6T]: F:声明独立远程扫码KMP消费者并按开关启用三端统一UI及真实Renderer链接 | R:code:verification/settings.gradle.kts,code:scripts/ci-build-kuikly-render.sh | A:- | S:默认候选版本1.0.3，Unified探针显式开启，OHOS始终消费Kuikly；不使用生产源码substitution
+gradle.properties[FV3T]: F:配置独立消费者AndroidX、Gradle堆与Native不可用目标处理 | R:- | A:- | S:-
+settings.gradle.kts[TV5T]: F:配置独立消费者依赖源并将扫码坐标限定到指定Maven仓库 | R:code:verification/build.gradle.kts | A:- | S:scannerMavenRepo可指定候选来源，默认JitPack
+嵌入式扫码候选验收.md[SV4T]: F:保留嵌入预览候选的跨端源码、测试、产物消费与未设备验收记录 | R:code:docs/功能与平台差异.md | A:- | S:历史候选及替身回归不证明当前版本真机相机表现
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/verification/ci/===
+test_cache_contract.py[TV5T]: F:检查源码编译缓存开关及行为测试禁缓存与up-to-date跳过的配置合同 | R:code:scripts/ci-repositories.gradle | A:- | S:-
+test_fork_download.py[TV6T]: F:离线替身验证失败后POM诊断的HTTPS边界、主备IP及证据采集 | R:code:scripts/ci-diagnose-fork-download.py | A:- | S:要求CI_AUTOMATION_ROOT绑定固定CI，不联网、不写hosts或启动Gradle
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/verification/src/androidMain/kotlin/===
+AndroidProbe.kt[TH5T]: F:消费Android原生预览反馈和后台图片解码公开入口 | R:code:scanner-core/src/androidMain/kotlin/io/github/gycrosskit/scanner/ScannerPreviewView.kt,code:scanner-core/src/androidMain/kotlin/io/github/gycrosskit/scanner/AndroidQrCodeDecoder.kt | A:preview,decode | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/verification/src/commonMain/kotlin/===
+Probe.kt[TH4T]: F:消费公共图片解码器接口签名 | R:code:scanner-core/src/commonMain/kotlin/io/github/gycrosskit/scanner/QrCodeDecoder.kt | A:probe | S:-
+UnifiedPreviewProbe.kt[TU5T]: F:编译消费三端KuiklyCompose预览Host及类型化原生View入口 | R:code:scanner-kuikly/src/commonMain/kotlin/io/github/gycrosskit/scanner/kuikly/ScannerPreviewHost.kt | A:unifiedTypedView,unifiedPreview | S:仅在verifyUnifiedUi启用时编译，不证明相机或视觉行为
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/verification/src/iosMain/kotlin/===
+IosProbe.kt[TH4T]: F:消费iOS图片解码bridge构造入口 | R:code:scanner-core/src/iosMain/kotlin/io/github/gycrosskit/scanner/IosQrCodeDecoder.kt | A:- | S:-
+
+===/Users/guoyang/.codex/worktrees/aoci-scanner/scanner/verification/src/ohosArm64Main/kotlin/===
+OhosProbe.kt[TE5T]: F:消费OHOS图片Module构造和类型化预览属性及事件公开方法 | R:code:scanner-kuikly/src/commonMain/kotlin/io/github/gycrosskit/scanner/kuikly/ScannerModule.kt,code:scanner-kuikly/src/commonMain/kotlin/io/github/gycrosskit/scanner/kuikly/ScannerPreviewView.kt | A:module,preview | S:编译探针不证明设备提供ScanKit
